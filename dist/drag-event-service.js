@@ -1,5 +1,5 @@
 /*!
- * DragEventService v0.0.1
+ * drag-event-service v0.0.2
  * (c) 2018-present phphe <phphe@outlook.com> (https://github.com/phphe)
  * Released under the MIT License.
  */
