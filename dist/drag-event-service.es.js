@@ -1,5 +1,5 @@
 /*!
- * drag-event-service v0.0.2
+ * drag-event-service v0.0.3
  * (c) 2018-present phphe <phphe@outlook.com> (https://github.com/phphe)
  * Released under the MIT License.
  */
@@ -64,10 +64,10 @@ var index = {
 
     for (var i = store.length - 1; i >= 0; i--) {
       var _store$i = store[i],
-          _handler = _store$i.handler,
+          handler2 = _store$i.handler,
           wrapper = _store$i.wrapper;
 
-      if (_handler === _handler) {
+      if (handler === handler2) {
         offDOM(el, eventName, wrapper);
         store.splice(i, 1);
       }

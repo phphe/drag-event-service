@@ -42,8 +42,8 @@ export default {
     const canTouch = this.canTouch()
     const eventName = events[name][canTouch?1:0]
     for (let i = store.length - 1; i >= 0; i--) {
-      const {handler, wrapper} = store[i]
-      if (handler === handler) {
+      const {handler: handler2, wrapper} = store[i]
+      if (handler === handler2) {
         hp.offDOM(el, eventName, wrapper)
         store.splice(i, 1)
       }
