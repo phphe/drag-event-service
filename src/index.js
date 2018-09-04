@@ -20,9 +20,10 @@ export default {
   },
   on(el, name, handler, ...args) {
     const store  = this._getStore(el)
+    const ts  = this
     const wrapper = function (e) {
       let mouse
-      const isTouch = this.isTouch(e)
+      const isTouch = ts.isTouch(e)
       if (isTouch) {
         // touch
         mouse = {x: e.changedTouches[0].pageX, y: e.changedTouches[0].pageY}
