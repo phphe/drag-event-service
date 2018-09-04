@@ -1,9 +1,8 @@
 /*!
- * drag-event-service v0.0.4
+ * drag-event-service v0.0.5
  * (c) 2018-present phphe <phphe@outlook.com> (https://github.com/phphe)
  * Released under the MIT License.
  */
-import * as hp from 'helper-js';
 import { onDOM, offDOM } from 'helper-js';
 
 // support desktop and mobile
@@ -24,6 +23,8 @@ var index = {
     return el._wrapperStore;
   },
   on: function on(el, name, handler) {
+    var _hp$onDOM, _hp$onDOM2;
+
     var store = this._getStore(el);
 
     var wrapper = function wrapper(e) {
@@ -55,14 +56,17 @@ var index = {
     store.push({
       handler: handler,
       wrapper: wrapper
-    });
+    }); // follow format will cause big bundle size
+    // 以下写法将会使打包工具认为hp是上下文, 导致打包整个hp
+    // hp.onDOM(el, events[name][0], wrapper, ...args)
 
     for (var _len = arguments.length, args = new Array(_len > 3 ? _len - 3 : 0), _key = 3; _key < _len; _key++) {
       args[_key - 3] = arguments[_key];
     }
 
-    onDOM.apply(hp, [el, events[name][0], wrapper].concat(args));
-    onDOM.apply(hp, [el, events[name][1], wrapper].concat(args));
+    (_hp$onDOM = onDOM).call.apply(_hp$onDOM, [null, el, events[name][0], wrapper].concat(args));
+
+    (_hp$onDOM2 = onDOM).call.apply(_hp$onDOM2, [null, el, events[name][1], wrapper].concat(args));
   },
   off: function off(el, name, handler) {
     var store = this._getStore(el);
@@ -77,8 +81,12 @@ var index = {
           wrapper = _store$i.wrapper;
 
       if (handler === handler2) {
-        offDOM.apply(hp, [el, events[name][0], wrapper].concat(args));
-        offDOM.apply(hp, [el, events[name][1], wrapper].concat(args));
+        var _hp$offDOM, _hp$offDOM2;
+
+        (_hp$offDOM = offDOM).call.apply(_hp$offDOM, [null, el, events[name][0], wrapper].concat(args));
+
+        (_hp$offDOM2 = offDOM).call.apply(_hp$offDOM2, [null, el, events[name][1], wrapper].concat(args));
+
         store.splice(i, 1);
       }
     }

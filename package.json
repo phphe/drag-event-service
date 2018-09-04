@@ -1,6 +1,6 @@
 {
   "name": "drag-event-service",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "",
   "main": "dist/drag-event-service.cjs.js",
   "module": "dist/drag-event-service.es.js",
@@ -21,7 +21,7 @@
     "bili": "^3.0.14"
   },
   "dependencies": {
-    "helper-js": "^1.1.7"
+    "helper-js": "^1.2.0"
   },
   "license": "MIT"
 }
