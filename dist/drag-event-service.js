@@ -1,5 +1,5 @@
 /*!
- * drag-event-service v0.0.3
+ * drag-event-service v0.0.4
  * (c) 2018-present phphe <phphe@outlook.com> (https://github.com/phphe)
  * Released under the MIT License.
  */
@@ -10,10 +10,23 @@
 }(this, (function () { 'use strict';
 
   /*!
-   * helper-js v1.0.53
+   * helper-js v1.1.7
    * (c) 2018-present phphe <phphe@outlook.com> (https://github.com/phphe)
    * Released under the MIT License.
    */
+  function _typeof(obj) {
+    if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") {
+      _typeof = function (obj) {
+        return typeof obj;
+      };
+    } else {
+      _typeof = function (obj) {
+        return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+      };
+    }
+
+    return _typeof(obj);
+  }
 
   function _classCallCheck(instance, Constructor) {
     if (!(instance instanceof Constructor)) {
@@ -123,30 +136,1391 @@
     glb = window;
   } // local store
 
+
+  var store = {}; // is 各种判断
+
+  function isset(v) {
+    return typeof v !== 'undefined';
+  }
+  function isArray(v) {
+    return Object.prototype.toString.call(v) === '[object Array]';
+  }
+  function isBool(v) {
+    return Object.prototype.toString.call(v) === '[object Boolean]';
+  }
+  function isNumber(v) {
+    return Object.prototype.toString.call(v) === '[object Number]';
+  }
+  function isNumeric(v) {
+    return isFinite(v);
+  }
+  function isString(v) {
+    return Object.prototype.toString.call(v) === '[object String]';
+  }
+  function isObject(v) {
+    return Object.prototype.toString.call(v) === '[object Object]';
+  }
+  function isFunction(v) {
+    return typeof v === 'function';
+  }
+  function isPromise(v) {
+    return Object.prototype.toString.call(v) === '[object Promise]';
+  }
+  function empty(v) {
+    if (v == null) {
+      return true;
+    } else if (v.length != null) {
+      return v.length === 0;
+    } else if (isBool(v)) {
+      return false;
+    } else if (isNumber(v)) {
+      return isNaN(v);
+    } else if (isObject(v)) {
+      return Object.keys(v).length === 0;
+    }
+  } // num
+
+  function numRand(min, max) {
+    if (arguments.length === 1) {
+      max = min;
+      min = 0;
+    }
+
+    return Math.floor(Math.random() * (max - min + 1) + min);
+  }
+  function numPad(num, n) {
+    var len = num.toString().length;
+
+    while (len < n) {
+      num = '0' + num;
+      len++;
+    }
+
+    return num;
+  }
+  function min(n, min) {
+    return n < min ? min : n;
+  }
+  function max(n, max) {
+    return n < max ? n : max;
+  } // str 字符
+
+  function studlyCase(str) {
+    return str && str[0].toUpperCase() + str.substr(1);
+  }
+  function kebabCase(str) {
+    return str.replace(/ /g, '-').replace(/_/g, '-').replace(/([A-Z])/g, '-$1').replace(/--+/g, '-').replace(/^-|-$|/g, '').toLowerCase();
+  }
+  function snakeCase(str) {
+    return kebabCase(str).replace(/-/g, '_');
+  }
+  function camelCase(str) {
+    var temp = str.toString().split(/[-_]/);
+
+    for (var i = 1; i < temp.length; i++) {
+      temp[i] = studlyCase(temp[i]);
+    }
+
+    return temp.join('');
+  }
+  function camelToWords(str) {
+    return str.toString().trim().split(/(?=[A-Z])/);
+  }
+  function titleCase(str) {
+    return camelToWords(studlyCase(camelCase(str))).join(' ').replace(/\bid\b/ig, 'ID');
+  }
+  function strRand() {
+    var len = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 8;
+    var prefix = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
+    var r = '';
+    var seeds = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+
+    for (var i = 0; i < len; i++) {
+      r += seeds[numRand(seeds.length - 1)];
+    }
+
+    return prefix + r;
+  }
+  function replaceMultiple(mapObj, str) {
+    var reg = new RegExp(Object.keys(mapObj).join('|'), 'g');
+    return str.replace(reg, function (matchedKey) {
+      return mapObj[matchedKey];
+    });
+  } // array
+
+  function arrayRemove(arr, v) {
+    var index;
+    var count = 0;
+
+    while ((index = arr.indexOf(v)) > -1) {
+      arr.splice(index, 1);
+      count++;
+    }
+
+    return count;
+  }
+  function arrayRemoveBySortedIndexes(arr, sortedIndexes) {
+    for (var i = sortedIndexes.length - 1; i >= 0; i--) {
+      var index = sortedIndexes[i];
+      arr.splice(index, 1);
+    }
+  }
+  function newArrayRemoveAt(arr, indexes) {
+    indexes = toArrayIfNot(indexes);
+    var mapping = {};
+    var _iteratorNormalCompletion = true;
+    var _didIteratorError = false;
+    var _iteratorError = undefined;
+
+    try {
+      for (var _iterator = indexes[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+        var index = _step.value;
+        mapping[index] = true;
+      }
+    } catch (err) {
+      _didIteratorError = true;
+      _iteratorError = err;
+    } finally {
+      try {
+        if (!_iteratorNormalCompletion && _iterator.return != null) {
+          _iterator.return();
+        }
+      } finally {
+        if (_didIteratorError) {
+          throw _iteratorError;
+        }
+      }
+    }
+
+    var newArr = [];
+    var len = arr.length;
+
+    for (var i = 0; i < len; i++) {
+      if (!mapping[i]) {
+        newArr.push(arr[i]);
+      }
+    }
+
+    return newArr;
+  }
+  function arrayAt(arr, n) {
+    return arr[n >= 0 ? n : arr.length + n];
+  }
+  function arrayFirst(arr) {
+    return arr[0];
+  }
+  function arrayLast(arr) {
+    return arr[arr.length - 1];
+  }
+  function arrayDiff(arr1, arr2) {
+    var len = arr1.length;
+    var arr = [];
+
+    while (len--) {
+      if (arr2.indexOf(arr1[len]) < 0) {
+        arr.push(arr1[len]);
+      }
+    }
+
+    return arr;
+  } // offset can be many
+
+  function arraySibling(arr, item, offset) {
+    var index = arr.indexOf(item);
+
+    if (index === -1) {
+      throw 'item is not in array';
+    }
+
+    if (isArray(offset)) {
+      return offset.map(function (v) {
+        return arr[index + v];
+      });
+    }
+
+    return arr[index + offset];
+  }
+  function toArrayIfNot(arrOrNot) {
+    return isArray(arrOrNot) ? arrOrNot : [arrOrNot];
+  } // n can be getter(number of times)
+  // n可以是方法, 参数1是第几次分块
+
+  function splitArray(arr, n) {
+    var r = [];
+
+    if (isFunction(n)) {
+      var getChunkLength = n;
+      var times = 1;
+      var i = 0;
+
+      while (i < arr.length) {
+        var _n = getChunkLength(times);
+
+        var end = i + _n;
+        r.push(arr.slice(i, end));
+        i = end;
+        times++;
+      }
+    } else {
+      var _i = 0;
+
+      while (_i < arr.length) {
+        var _end = _i + n;
+
+        r.push(arr.slice(_i, _end));
+        _i = _end;
+      }
+    }
+
+    return r;
+  }
+  function groupArray(arr, getMark) {
+    var groups = new Map();
+    arr.forEach(function (v) {
+      var mark = getMark(v);
+
+      if (!groups.has(mark)) {
+        groups.set(mark, []);
+      }
+
+      groups.get(mark).push(v);
+    });
+    var r = [];
+    groups.forEach(function (value, key) {
+      r.push([key, value]);
+    });
+    return r;
+  }
+  function arrayDistinct(arr) {
+    if (glb.Set) {
+      return _toConsumableArray(new Set(arr));
+    } else {
+      return arr.filter(function (v, i, a) {
+        return a.indexOf(v) === i;
+      });
+    }
+  } // object
+
+  function assignIfDifferent(obj, key, val) {
+    if (obj[key] !== val) {
+      obj[key] = val;
+    }
+  }
+  function objectMerge(o1, o2) {
+    for (var k in o2) {
+      if (!o1.hasOwnProperty(k)) {
+        o1[k] = o2[k];
+      } else if (isObject(o1[k]) && isObject(o2[k])) {
+        Object.assign(o1[k], o2[k]);
+      } else {
+        o1[k] = o2[k];
+      }
+    }
+
+    return o1;
+  }
+  function objectMap(obj, func) {
+    var r = {};
+
+    for (var key in obj) {
+      r[key] = func(obj[key], key, obj);
+    }
+
+    return r;
+  }
+  function objectOnly(obj, keys) {
+    var r = {};
+
+    for (var key in obj) {
+      if (keys.indexOf(key) > -1) {
+        r[key] = obj[key];
+      }
+    }
+
+    return r;
+  }
+  function objectExcept(obj, keys) {
+    var r = {};
+
+    for (var key in obj) {
+      if (keys.indexOf(key) === -1) {
+        r[key] = obj[key];
+      }
+    }
+
+    return r;
+  } // loop for all type
+
+  function forAll(val, handler, reverse) {
+    if (!reverse) {
+      if (isArray(val) || isString(val)) {
+        for (var i = 0; i < val.length; i++) {
+          if (handler(val[i], i) === false) {
+            break;
+          }
+        }
+      } else if (isObject(val)) {
+        var _arr = Object.keys(val);
+
+        for (var _i2 = 0; _i2 < _arr.length; _i2++) {
+          var key = _arr[_i2];
+
+          if (handler(val[key], key) === false) {
+            break;
+          }
+        }
+      } else if (Number.isInteger(val)) {
+        for (var _i3 = 0; _i3 < val; _i3++) {
+          if (handler(_i3, _i3) === false) {
+            break;
+          }
+        }
+      }
+    } else {
+      if (isArray(val) || isString(val)) {
+        for (var _i4 = val.length - 1; _i4 >= 0; _i4--) {
+          if (handler(val[_i4], _i4) === false) {
+            break;
+          }
+        }
+      } else if (isObject(val)) {
+        var keys = Object.keys(val);
+        keys.reverse();
+
+        for (var _i5 = 0; _i5 < keys.length; _i5++) {
+          var _key = keys[_i5];
+
+          if (handler(val[_key], _key) === false) {
+            break;
+          }
+        }
+      } else if (Number.isInteger(val)) {
+        for (var _i6 = val - 1; _i6 >= 0; _i6--) {
+          if (handler(_i6, _i6) === false) {
+            break;
+          }
+        }
+      }
+    }
+  } // source: http://stackoverflow.com/questions/8817394/javascript-get-deep-value-from-object-by-passing-path-to-it-as-string
+
+  function objectGet(obj, path, throwError) {
+    var paths = isArray(path) ? path : path.split('.');
+    var current = obj;
+
+    try {
+      var _iteratorNormalCompletion2 = true;
+      var _didIteratorError2 = false;
+      var _iteratorError2 = undefined;
+
+      try {
+        for (var _iterator2 = paths[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+          var key = _step2.value;
+          current = current[key];
+        }
+      } catch (err) {
+        _didIteratorError2 = true;
+        _iteratorError2 = err;
+      } finally {
+        try {
+          if (!_iteratorNormalCompletion2 && _iterator2.return != null) {
+            _iterator2.return();
+          }
+        } finally {
+          if (_didIteratorError2) {
+            throw _iteratorError2;
+          }
+        }
+      }
+    } catch (e) {
+      if (throwError) {
+        throw "Path does not exist";
+      }
+    }
+
+    return current;
+  }
+  function objectSet(obj, path, value) {
+    var paths = isArray(path) ? path : path.split('.');
+    var lastKey = arrayLast(paths);
+    var parent = objectGet(obj, paths.slice(0, paths.length - 1));
+
+    if (!parent) {
+      throw "Path does not exist";
+    }
+
+    parent[lastKey] = value;
+  }
+  function unset(obj, prop) {
+    obj[prop] = undefined;
+
+    try {
+      delete obj[prop];
+    } catch (e) {}
+  } // exclude: array or function
+
+  function cloneObj(obj, exclude) {
+    var type = _typeof(obj);
+
+    switch (type) {
+      case 'undefined':
+      case 'boolean':
+      case 'nuber':
+      case 'string':
+      case 'function':
+        return obj;
+        break;
+
+      case 'object':
+        if (obj === null) {
+          // null is object
+          return obj;
+        }
+
+        var r;
+
+        if (isArray(obj)) {
+          r = [];
+          var _iteratorNormalCompletion3 = true;
+          var _didIteratorError3 = false;
+          var _iteratorError3 = undefined;
+
+          try {
+            for (var _iterator3 = obj[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+              var item = _step3.value;
+              r.push(cloneObj(item, exclude));
+            }
+          } catch (err) {
+            _didIteratorError3 = true;
+            _iteratorError3 = err;
+          } finally {
+            try {
+              if (!_iteratorNormalCompletion3 && _iterator3.return != null) {
+                _iterator3.return();
+              }
+            } finally {
+              if (_didIteratorError3) {
+                throw _iteratorError3;
+              }
+            }
+          }
+        } else {
+          r = {};
+
+          var _arr2 = Object.keys(obj);
+
+          for (var _i7 = 0; _i7 < _arr2.length; _i7++) {
+            var key = _arr2[_i7];
+
+            if (!exclude || isArray(exclude) && !exclude.includes(key) || !exclude(key, obj[key], obj)) {
+              r[key] = cloneObj(obj[key], exclude);
+            }
+          }
+        }
+
+        return r;
+        break;
+
+      default:
+        return obj;
+        break;
+    }
+  } // return cloned obj
+  // handler(value, key, parent)
+  // handler can return follow:
+  //  null: don't change anything
+  //  {key: false}: delete
+  //  {value}: change value
+  //  {key, value}. change key and value
+  // limit: to prevent circular reference.
+
+  function mapObjectTree(obj, handler) {
+    var limit = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 10000;
+    var r;
+    var count = 0;
+    var stack = [{
+      value: obj
+    }];
+
+    var _loop = function _loop() {
+      if (count >= limit) {
+        throw "mapObjectTree: limit(".concat(limit, ") reached, object may has circular reference");
+      }
+
+      count++;
+
+      var _stack$shift = stack.shift(),
+          value = _stack$shift.value,
+          key = _stack$shift.key,
+          parent = _stack$shift.parent,
+          newParent = _stack$shift.newParent;
+
+      var t = handler(value, key, parent);
+
+      var assign = function assign(value, key, canPush) {
+        if (isArray(value)) {
+          value = [];
+        } else if (isObject(value)) {
+          value = {};
+        }
+
+        if (parent) {
+          if (isArray(newParent) && canPush) {
+            newParent.push(value);
+          } else {
+            newParent[key] = value;
+          }
+        } else {
+          r = value;
+        } // value may changed
+
+
+        return value;
+      };
+
+      var newVal = void 0,
+          val = void 0;
+
+      if (!t) {
+        // no change
+        val = value;
+        newVal = assign(value, key);
+      } else {
+        var key2 = t.key,
+            _value = t.value;
+        val = _value;
+
+        if (key2 === false) {
+          // del
+          return "continue";
+        } else if (key2 == null) {
+          // don't change key
+          newVal = assign(_value, key, true);
+        } else {
+          newVal = assign(_value, key2);
+        }
+      }
+
+      if (isArray(val)) {
+        var len = val.length;
+
+        for (var i = 0; i < len; i++) {
+          stack.push({
+            value: val[i],
+            key: i,
+            parent: val,
+            newParent: newVal
+          });
+        }
+      } else if (isObject(val)) {
+        Object.keys(val).forEach(function (key) {
+          stack.push({
+            value: val[key],
+            key: key,
+            parent: val,
+            newParent: newVal
+          });
+        });
+      }
+    };
+
+    while (stack.length > 0) {
+      var _ret = _loop();
+
+      if (_ret === "continue") continue;
+    }
+
+    return r;
+  } // arr, idKey/getId
+
+  function mapObjects(arr, idKey) {
+    var r = {};
+    var len = arr.length;
+
+    for (var i = 0; i < len; i++) {
+      var item = arr[i];
+      var id = isFunction(idKey) ? idKey(item, i) : item[idKey];
+      r[id] = item;
+    }
+
+    return r;
+  } //
+
+  function pairRows(rows1, rows2, key1, key2) {
+    if (!key2) {
+      key2 = key1;
+    }
+
+    var map = mapObjects(rows2, key2);
+    return rows1.map(function (row1) {
+      return [row1, map[row1[key1]]];
+    });
+  } // function helper | method helper
+
+  function executeWithCount(func, context) {
+    var count = 0;
+    return function () {
+      for (var _len = arguments.length, args = new Array(_len), _key2 = 0; _key2 < _len; _key2++) {
+        args[_key2] = arguments[_key2];
+      }
+
+      args.unshift(count++);
+      return func.apply(context, args);
+    };
+  }
+  function watchChange(getVal, handler) {
+    var oldVal;
+
+    var update = function update() {
+      for (var _len2 = arguments.length, args = new Array(_len2), _key3 = 0; _key3 < _len2; _key3++) {
+        args[_key3] = arguments[_key3];
+      }
+
+      var newVal = getVal.apply(void 0, args);
+
+      if (oldVal !== newVal) {
+        handler.apply(void 0, [newVal].concat(args));
+      }
+
+      oldVal = newVal;
+    };
+
+    return update;
+  }
+  var store_executeOnceInScopeByName = {};
+  function executeOnceInScopeByName(name, action) {
+    var scope = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : scope_executeOnceInScopeByName;
+    var storeResult = arguments.length > 3 ? arguments[3] : undefined;
+    name = "executeOnceInScopeByName_".concat(name);
+
+    if (!scope[name]) {
+      var value = action();
+
+      var destroy = function destroy() {
+        delete scope[name];
+      };
+
+      scope[name] = {
+        destroy: destroy
+      };
+
+      if (storeResult) {
+        scope[name].value = value;
+      }
+    }
+
+    return scope[name];
+  }
+  function debounce(action) {
+    var wait = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
+    var immediate = arguments.length > 2 ? arguments[2] : undefined;
+    var t;
+    var delaying;
+    var lastArgs; // when trailing, use last args
+
+    var wrappedAction = function wrappedAction() {
+      var _this = this;
+
+      var self = wrappedAction;
+
+      for (var _len3 = arguments.length, args = new Array(_len3), _key4 = 0; _key4 < _len3; _key4++) {
+        args[_key4] = arguments[_key4];
+      }
+
+      lastArgs = args;
+
+      if (!delaying) {
+        delaying = true;
+        self.destroyed = false;
+
+        if (immediate) {
+          action.call.apply(action, [this].concat(args));
+          t = setTimeout(function () {
+            t = null;
+            delaying = false;
+            self.destroyed = true;
+          }, wait);
+        } else {
+          t = setTimeout(function () {
+            action.call.apply(action, [_this].concat(_toConsumableArray(lastArgs)));
+            t = null;
+            delaying = false;
+            self.destroyed = true;
+          }, wait);
+        }
+      }
+    };
+
+    wrappedAction.destroy = function () {
+      if (t) {
+        clearTimeout(t);
+        t = null;
+      }
+
+      delaying = false;
+      self.destroyed = true;
+    };
+
+    return wrappedAction;
+  }
+  /**
+   * [joinMethods description]
+   * @param  {[Function[]]} methods        [description]
+   * @param  {String} [mode='value'] [value, pipeline]
+   * @return {[Function]}                [description]
+   */
+
+  function joinMethods(methods) {
+    var mode = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'value';
+    var simpleJoinedMethod;
+    var _iteratorNormalCompletion4 = true;
+    var _didIteratorError4 = false;
+    var _iteratorError4 = undefined;
+
+    try {
+      var _loop2 = function _loop2() {
+        var method = _step4.value;
+        var old = simpleJoinedMethod;
+
+        if (old) {
+          simpleJoinedMethod = function simpleJoinedMethod() {
+            for (var _len4 = arguments.length, args = new Array(_len4), _key5 = 0; _key5 < _len4; _key5++) {
+              args[_key5] = arguments[_key5];
+            }
+
+            return method.call.apply(method, [this, mode === 'value' ? old.call.apply(old, [this].concat(args)) : old].concat(args));
+          };
+        } else {
+          simpleJoinedMethod = method;
+        }
+      };
+
+      for (var _iterator4 = methods[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+        _loop2();
+      }
+    } catch (err) {
+      _didIteratorError4 = true;
+      _iteratorError4 = err;
+    } finally {
+      try {
+        if (!_iteratorNormalCompletion4 && _iterator4.return != null) {
+          _iterator4.return();
+        }
+      } finally {
+        if (_didIteratorError4) {
+          throw _iteratorError4;
+        }
+      }
+    }
+
+    return simpleJoinedMethod;
+  } // promise
+  // execute promise in sequence
+
+  function executePromiseGetters(getters) {
+    var concurrent = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 1;
+    var stopped;
+    var promise = new Promise(function (resolve, reject) {
+      var r = [];
+      var chunks = splitArray(getters, concurrent);
+      var promise = Promise.resolve();
+      chunks.forEach(function (chunk) {
+        promise = promise.then(function (result) {
+          if (result) {
+            r.push.apply(r, _toConsumableArray(result));
+          }
+
+          if (stopped) {
+            reject('stopped');
+          } else {
+            return Promise.all(chunk.map(function (v) {
+              return v();
+            }));
+          }
+        });
+      });
+      promise.then(function (result) {
+        r.push.apply(r, _toConsumableArray(result));
+        resolve(r);
+      });
+    });
+    return {
+      promise: promise,
+      destroy: function destroy() {
+        stopped = true;
+      }
+    };
+  } // url
+
+  /* eslint-disable */
+
+  function getUrlParam(par) {
+    // 获取当前URL
+    var local_url = document.location.href; // 获取要取得的get参数位置
+
+    var get$$1 = local_url.indexOf(par + '=');
+
+    if (get$$1 == -1) {
+      return false;
+    } // 截取字符串
+
+
+    var get_par = local_url.slice(par.length + get$$1 + 1); // 判断截取后的字符串是否还有其他get参数
+
+    var nextPar = get_par.indexOf('&');
+
+    if (nextPar != -1) {
+      get_par = get_par.slice(0, nextPar);
+    }
+
+    return get_par;
+  }
+  /* eslint-enable */
+  // dom
+
+  function uniqueId() {
+    var prefix = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'id_';
+    var id = prefix + strRand();
+    if (!store.uniqueId) store.uniqueId = {};
+    var generatedIds = store.uniqueId;
+
+    if (document.getElementById(id) || generatedIds[id]) {
+      return uniqueId(prefix);
+    } else {
+      generatedIds[id] = true;
+      return id;
+    }
+  }
+  function isDescendantOf(el, parent) {
+    while (true) {
+      if (el.parentElement == null) {
+        return false;
+      } else if (el.parentElement === parent) {
+        return true;
+      } else {
+        el = el.parentElement;
+      }
+    }
+  } // refer: https://stackoverflow.com/questions/871399/cross-browser-method-for-detecting-the-scrolltop-of-the-browser-window
+
+  function getScroll() {
+    if (typeof pageYOffset != 'undefined') {
+      //most browsers except IE before #9
+      return {
+        top: pageYOffset,
+        left: pageXOffset
+      };
+    } else {
+      var B = document.body; //IE 'quirks'
+
+      var D = document.documentElement; //IE with doctype
+
+      D = D.clientHeight ? D : B;
+      return {
+        top: D.scrollTop,
+        left: D.scrollLeft
+      };
+    }
+  } // refer: https://gist.github.com/aderaaij/89547e34617b95ac29d1
+
+  function getOffset(el) {
+    var rect = el.getBoundingClientRect();
+    var scroll = getScroll();
+    return {
+      x: rect.left + scroll.left,
+      y: rect.top + scroll.top
+    };
+  }
+  function offsetToPosition(el, of) {
+    var offsetParent = el.offsetParent;
+
+    if (!offsetParent || offsetParent === document.body && getComputedStyle(document.body).position === 'static') {
+      offsetParent = document.body.parentElement;
+    }
+
+    var ps = {
+      x: el.offsetLeft,
+      y: el.offsetTop
+    };
+    var parent = el;
+
+    while (true) {
+      parent = parent.parentElement;
+
+      if (parent === offsetParent || !parent) {
+        break;
+      }
+
+      ps.x -= parent.scrollLeft;
+      ps.y -= parent.scrollTop;
+    }
+
+    return ps;
+  }
+  function findParent(el, callback) {
+    return doFindParent(el, callback);
+
+    function doFindParent(el, callback) {
+      if (el.parentElement) {
+        if (callback(el.parentElement)) {
+          return el.parentElement;
+        } else {
+          return doFindParent(el.parentElement, callback);
+        }
+      }
+    }
+  }
+  function backupAttr(el, name) {
+    var key = "original_".concat(name);
+    el[key] = el.getAttribute(name);
+  }
+  function restoreAttr(el, name) {
+    var key = "original_".concat(name);
+    el.setAttribute(name, el[key]);
+  } // source: http://youmightnotneedjquery.com/
+
+  function hasClass(el, className) {
+    if (el.classList) {
+      return el.classList.contains(className);
+    } else {
+      return new RegExp('(^| )' + className + '( |$)', 'gi').test(el.className);
+    }
+  } // source: http://youmightnotneedjquery.com/
+
+  function addClass(el, className) {
+    if (!hasClass(el, className)) {
+      if (el.classList) {
+        el.classList.add(className);
+      } else {
+        el.className += ' ' + className;
+      }
+    }
+  } // source: http://youmightnotneedjquery.com/
+
+  function removeClass(el, className) {
+    if (el.classList) {
+      el.classList.remove(className);
+    } else {
+      el.className = el.className.replace(new RegExp('(^|\\b)' + className.split(' ').join('|') + '(\\b|$)', 'gi'), ' ');
+    }
+  }
+  function getElSize(el) {
+    var originDisplay = el.style.display;
+    el.style.display = 'block';
+    var size = {
+      width: el.offsetWidth,
+      height: el.offsetHeight
+    };
+    el.style.display = originDisplay;
+    return size;
+  }
+  /**
+   * [isOffsetInEl]
+   * @param {Number} x
+   * @param {Number} y
+   * @param {Object} el HTML Element
+   */
+
+  function isOffsetInEl(x, y, el) {
+    var offset = getOffset(el);
+    return offset.x <= x && offset.x + el.offsetWidth >= x && offset.y <= y && offset.y + el.offsetHeight >= y;
+  } // get border
+
+  function getBorder(el) {
+    var body = document.body;
+    var workArea = findParent(el, function (v) {
+      return hasClass(v, 'work-area');
+    });
+    var of = getOffset(workArea);
+    return {
+      left: of.x,
+      right: of.x + workArea.offsetWidth,
+      top: of.y + 50,
+      bottom: body.offsetHeight < glb.innerHeight ? glb.innerHeight : body.offsetHeight
+    };
+  }
+  function setElChildByIndex(el, index, child) {
+    child.childComponentIndex = index;
+    var len = el.childNodes.length;
+
+    if (len === 0) {
+      el.appendChild(child);
+    } else if (index === 0) {
+      el.insertBefore(child, el.childNodes[0]);
+    } else {
+      var _binarySearch = binarySearch(el.childNodes, function (el) {
+        return el.childComponentIndex - index;
+      }, 0, max(index, len - 1), true),
+          nearestIndex = _binarySearch.index,
+          nearest = _binarySearch.value,
+          bigger = _binarySearch.bigger;
+
+      if (bigger) {
+        el.insertBefore(child, nearest);
+      } else {
+        var next = el.childNodes[nearestIndex + 1];
+
+        if (next) {
+          el.insertBefore(child, next);
+        } else {
+          el.appendChild(child);
+        }
+      }
+    }
+  } // dom event
+
   function onDOM(el, name, handler) {
+    for (var _len5 = arguments.length, args = new Array(_len5 > 3 ? _len5 - 3 : 0), _key6 = 3; _key6 < _len5; _key6++) {
+      args[_key6 - 3] = arguments[_key6];
+    }
+
     if (el.addEventListener) {
       // 所有主流浏览器，除了 IE 8 及更早 IE版本
-      el.addEventListener(name, handler);
+      el.addEventListener.apply(el, [name, handler].concat(args));
     } else if (el.attachEvent) {
       // IE 8 及更早 IE 版本
-      el.attachEvent("on".concat(name), handler);
+      el.attachEvent.apply(el, ["on".concat(name), handler].concat(args));
     }
   }
   function offDOM(el, name, handler) {
+    for (var _len6 = arguments.length, args = new Array(_len6 > 3 ? _len6 - 3 : 0), _key7 = 3; _key7 < _len6; _key7++) {
+      args[_key7 - 3] = arguments[_key7];
+    }
+
     if (el.removeEventListener) {
       // 所有主流浏览器，除了 IE 8 及更早 IE版本
-      el.removeEventListener(name, handler);
+      el.removeEventListener.apply(el, [name, handler].concat(args));
     } else if (el.detachEvent) {
       // IE 8 及更早 IE 版本
-      el.detachEvent("on".concat(name), handler);
+      el.detachEvent.apply(el, ["on".concat(name), handler].concat(args));
     }
   } // advance
+  // binarySearch 二分查找
+
+  function binarySearch(arr, callback, start, end, returnNearestIfNoHit) {
+    var max = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : 1000;
+    var midNum;
+    var mid;
+
+    if (start == null) {
+      start = 0;
+      end = arr.length - 1;
+    }
+
+    var i = 0;
+    var r;
+
+    while (start >= 0 && start <= end) {
+      if (i >= max) {
+        throw Error("binarySearch: loop times is over ".concat(max, ", you can increase the limit."));
+      }
+
+      midNum = Math.floor((end - start) / 2 + start);
+      mid = arr[midNum];
+      r = callback(mid, i);
+
+      if (r > 0) {
+        end = midNum - 1;
+      } else if (r < 0) {
+        start = midNum + 1;
+      } else {
+        return {
+          index: midNum,
+          value: mid,
+          count: i + 1,
+          hit: true
+        };
+      }
+
+      i++;
+    }
+
+    return returnNearestIfNoHit ? {
+      index: midNum,
+      value: mid,
+      count: i + 1,
+      hit: false,
+      bigger: r > 0
+    } : null;
+  } //
+
+  function windowLoaded() {
+    return new Promise(function (resolve, reject) {
+      if (document && document.readyState === 'complete') {
+        resolve();
+      } else {
+        glb.addEventListener('load', function once() {
+          resolve();
+          glb.removeEventListener('load', once);
+        });
+      }
+    });
+  }
+  function waitTime(milliseconds, callback) {
+    return new Promise(function (resolve, reject) {
+      setTimeout(function () {
+        callback && callback();
+        resolve();
+      }, milliseconds);
+    });
+  } // overload waitFor(condition, time = 100, maxCount = 1000))
+
+  function waitFor(name, condition) {
+    var time = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 100;
+    var maxCount = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 1000;
+
+    if (isFunction(name)) {
+      maxCount = time;
+      time = isNumeric(condition) ? condition : 100;
+      condition = name;
+      name = null;
+    }
+
+    if (!store.waitFor) store.waitFor = {};
+    var waits = store.waitFor;
+
+    if (name && isset(waits[name])) {
+      glb.clearInterval(waits[name]);
+      delete waits[name];
+    }
+
+    return new Promise(function (resolve, reject) {
+      var count = 0;
+
+      function judge(interval) {
+        if (count <= maxCount) {
+          if (condition()) {
+            stop(interval, name);
+            resolve();
+          }
+        } else {
+          stop(interval, name);
+          reject(new Error('waitFor: Limit is reached'));
+        }
+
+        count++;
+      }
+
+      function stop(interval, name) {
+        if (interval) {
+          if (name && isset(waits[name])) {
+            glb.clearInterval(waits[name]);
+            delete waits[name];
+          } else {
+            glb.clearInterval(interval);
+          }
+        }
+      }
+
+      var interval = glb.setInterval(function () {
+        judge(interval);
+      }, time);
+
+      if (name) {
+        waits[name] = interval;
+      }
+
+      judge();
+    });
+  }
+  function retry(func) {
+    var limitTimes = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 3;
+    if (!store.retry) store.retry = {};
+    var counters = retry;
+    var name = generateName();
+    counters[name] = 0;
+    return doFunc;
+
+    function doFunc(arg1, arg2, arg3) {
+      return func(arg1, arg2, arg3).then(function (data) {
+        delete counters[name];
+        return data;
+      }).catch(function (e) {
+        counters[name]++;
+
+        if (counters[name] >= limitTimes) {
+          delete counters[name];
+          return Promise.reject(e);
+        } else {
+          return doFunc(arg1, arg2, arg3);
+        }
+      });
+    }
+
+    function generateName() {
+      var name = Math.random() + '';
+
+      if (counters[name]) {
+        return generateName();
+      } else {
+        return name;
+      }
+    }
+  } // 复制文字到剪贴板
+
+  function copyTextToClipboard(text) {
+    var textArea = document.createElement('textarea'); //
+    // *** This styling is an extra step which is likely not required. ***
+    //
+    // Why is it here? To ensure:
+    // 1. the element is able to have focus and selection.
+    // 2. if element was to flash render it has minimal visual impact.
+    // 3. less flakyness with selection and copying which **might** occur if
+    //    the textarea element is not visible.
+    //
+    // The likelihood is the element won't even render, not even a flash,
+    // so some of these are just precautions. However in IE the element
+    // is visible whilst the popup box asking the user for permission for
+    // the web page to copy to the clipboard.
+    //
+    // Place in top-left corner of screen regardless of scroll position.
+
+    textArea.style.position = 'fixed';
+    textArea.style.top = 0;
+    textArea.style.left = 0; // Ensure it has a small width and height. Setting to 1px / 1em
+    // doesn't work as this gives a negative w/h on some browsers.
+
+    textArea.style.width = '2em';
+    textArea.style.height = '2em'; // We don't need padding, reducing the size if it does flash render.
+
+    textArea.style.padding = 0; // Clean up any borders.
+
+    textArea.style.border = 'none';
+    textArea.style.outline = 'none';
+    textArea.style.boxShadow = 'none'; // Avoid flash of white box if rendered for any reason.
+
+    textArea.style.background = 'transparent';
+    textArea.value = text;
+    document.body.appendChild(textArea);
+    textArea.select();
+
+    try {
+      var successful = document.execCommand('copy');
+      var msg = successful ? 'successful' : 'unsuccessful';
+      console.log('Copying text command was ' + msg);
+    } catch (err) {
+      console.log('Oops, unable to copy');
+    }
+
+    document.body.removeChild(textArea);
+  } // jquery
+
+  function jqFixedSize(sel) {
+    var $ = glb.jQuery;
+    $(sel).each(function () {
+      var t = $(this);
+      t.css({
+        width: t.width() + 'px',
+        height: t.height() + 'px'
+      });
+    });
+  }
+  function jqMakeCarousel(wrapperSel, listSel, itemSel) {
+    var speed = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 1000;
+    var space = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : 16;
+    var dir = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : 'left';
+    var top = arguments.length > 6 && arguments[6] !== undefined ? arguments[6] : 0;
+
+    if (space.toString().match(/^\d+$/)) {
+      space = space + 'px';
+    }
+
+    var spaceNumber = parseFloat(space);
+    var $ = glb.jQuery;
+    var wrapper = $(wrapperSel);
+    var list = wrapper.find(listSel);
+    wrapper.css({
+      position: 'relative',
+      height: wrapper.height() + 'px'
+    });
+    var items0 = list.find(itemSel);
+    items0.css({
+      margin: '0',
+      marginRight: space
+    });
+    var width = (Math.ceil(items0.width()) + spaceNumber) * items0.length;
+    list.css({
+      position: 'absolute',
+      margin: '0',
+      width: width + 'px'
+    });
+    var height = list.height();
+    var list2 = list.clone();
+    var list3 = list.clone();
+    list.css({
+      left: 0
+    });
+    list2.css({
+      left: width + 'px'
+    });
+    list3.css({
+      left: width * 2 + 'px'
+    });
+    var lists = $('<div></div>');
+    lists.css({
+      position: 'absolute',
+      width: width * 3 + 'px',
+      height: height + 'px',
+      left: 0,
+      top: top
+    });
+    lists.append(list).append(list2).append(list3);
+    wrapper.append(lists);
+    var left = 0;
+
+    function animateLoop() {
+      if (dir === 'left') {
+        left -= 100;
+      } else {
+        left += 100;
+      }
+
+      lists.animate({
+        left: "".concat(left, "px")
+      }, speed, 'linear', function () {
+        if (Math.abs(left) > width) {
+          if (dir === 'left') {
+            left += width;
+          } else {
+            left -= width;
+          }
+
+          lists.css({
+            left: left + 'px'
+          });
+        }
+
+        animateLoop();
+      });
+    }
+
+    animateLoop();
+  } // https://developer.mozilla.org/docs/Web/API/Window/open
+  // http://www.w3school.com.cn/htmldom/met_win_open.asp#windowfeatures
+
+  function openWindow(url, name) {
+    var opt = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+    glb.open(url, name, Object.keys(opt).map(function (k) {
+      return "".concat(k, "=").concat(opt[k]);
+    }).join(','));
+  }
+  function openCenterWindow(url, name, width, height) {
+    var opt = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : {};
+    var t = {
+      width: width,
+      height: height,
+      top: (glb.screen.availHeight - 30 - height) / 2,
+      left: (glb.screen.availWidth - 30 - width) / 2
+    };
+    Object.assign(t, opt);
+    openWindow(url, name, t);
+  }
   var URLHelper =
   /*#__PURE__*/
   function () {
     // protocol, hostname, port, pastname
     function URLHelper(baseUrl) {
-      var _this = this;
+      var _this2 = this;
 
       _classCallCheck(this, URLHelper);
 
@@ -168,7 +1542,7 @@
       if (t[1]) {
         t[1].split('&').forEach(function (v) {
           var t2 = v.split('=');
-          _this.search[t2[0]] = t2[1] == null ? '' : decodeURIComponent(t2[1]);
+          _this2.search[t2[0]] = t2[1] == null ? '' : decodeURIComponent(t2[1]);
         });
       }
     }
@@ -176,11 +1550,11 @@
     _createClass(URLHelper, [{
       key: "getHref",
       value: function getHref() {
-        var _this2 = this;
+        var _this3 = this;
 
         var t = [this.baseUrl];
         var searchStr = Object.keys(this.search).map(function (k) {
-          return "".concat(k, "=").concat(encodeURIComponent(_this2.search[k]));
+          return "".concat(k, "=").concat(encodeURIComponent(_this3.search[k]));
         }).join('&');
 
         if (searchStr) {
@@ -193,6 +1567,47 @@
 
     return URLHelper;
   }(); // 解析函数参数, 帮助重载
+  // types eg: ['Object', (i) => i > 3, ['Number', default], null ]
+  // null represent all types of argument
+
+  function resolveArgsByType(args, types) {
+    var argIndex = 0;
+    return types.map(function (v) {
+      // make rule
+      var rule, dft;
+
+      if (isArray(v)) {
+        rule = v[0];
+        dft = v[1];
+      } else {
+        rule = v;
+        dft = undefined;
+      }
+
+      if (!isFunction(rule)) {
+        if (rule == null) {
+          rule = function rule() {
+            return true;
+          };
+        } else {
+          var t = rule;
+
+          rule = function rule(x) {
+            return Object.prototype.toString.call(x) === "[object ".concat(t, "]");
+          };
+        }
+      }
+
+      var arg = args[argIndex];
+
+      if (rule(arg)) {
+        argIndex++;
+        return arg;
+      } else {
+        return dft;
+      }
+    });
+  } // set null can remove a item
 
   function makeStorageHelper(storage) {
     return {
@@ -255,10 +1670,10 @@
     }, {
       key: "once",
       value: function once(name, handler) {
-        var _this3 = this;
+        var _this4 = this;
 
         var off = function off() {
-          _this3.off(name, wrappedHandler);
+          _this4.off(name, wrappedHandler);
         };
 
         var wrappedHandler = function wrappedHandler() {
@@ -284,8 +1699,8 @@
           }
         }
 
-        for (var _i4 = 0; _i4 < indexes.length; _i4++) {
-          var index = indexes[_i4];
+        for (var _i8 = 0; _i8 < indexes.length; _i8++) {
+          var index = indexes[_i8];
           this.eventStore.splice(index, 1);
         }
       }
@@ -294,39 +1709,39 @@
       value: function emit(name) {
         // 重要: 先找到要执行的项放在新数组里, 因为执行项会改变事件项存储数组
         var items = [];
-        var _iteratorNormalCompletion3 = true;
-        var _didIteratorError3 = false;
-        var _iteratorError3 = undefined;
+        var _iteratorNormalCompletion5 = true;
+        var _didIteratorError5 = false;
+        var _iteratorError5 = undefined;
 
         try {
-          for (var _iterator3 = this.eventStore[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
-            var item = _step3.value;
+          for (var _iterator5 = this.eventStore[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
+            var item = _step5.value;
 
             if (item.name === name) {
               items.push(item);
             }
           }
         } catch (err) {
-          _didIteratorError3 = true;
-          _iteratorError3 = err;
+          _didIteratorError5 = true;
+          _iteratorError5 = err;
         } finally {
           try {
-            if (!_iteratorNormalCompletion3 && _iterator3.return != null) {
-              _iterator3.return();
+            if (!_iteratorNormalCompletion5 && _iterator5.return != null) {
+              _iterator5.return();
             }
           } finally {
-            if (_didIteratorError3) {
-              throw _iteratorError3;
+            if (_didIteratorError5) {
+              throw _iteratorError5;
             }
           }
         }
 
-        for (var _len3 = arguments.length, args = new Array(_len3 > 1 ? _len3 - 1 : 0), _key3 = 1; _key3 < _len3; _key3++) {
-          args[_key3 - 1] = arguments[_key3];
+        for (var _len7 = arguments.length, args = new Array(_len7 > 1 ? _len7 - 1 : 0), _key8 = 1; _key8 < _len7; _key8++) {
+          args[_key8 - 1] = arguments[_key8];
         }
 
-        for (var _i5 = 0; _i5 < items.length; _i5++) {
-          var _item = items[_i5];
+        for (var _i9 = 0; _i9 < items.length; _i9++) {
+          var _item = items[_i9];
 
           _item.handler.apply(_item, args);
         }
@@ -341,12 +1756,12 @@
     _inherits(CrossWindow, _EventProcessor);
 
     function CrossWindow() {
-      var _this4;
+      var _this5;
 
       _classCallCheck(this, CrossWindow);
 
-      _this4 = _possibleConstructorReturn(this, (CrossWindow.__proto__ || Object.getPrototypeOf(CrossWindow)).call(this));
-      Object.defineProperty(_assertThisInitialized(_this4), "storageName", {
+      _this5 = _possibleConstructorReturn(this, (CrossWindow.__proto__ || Object.getPrototypeOf(CrossWindow)).call(this));
+      Object.defineProperty(_assertThisInitialized(_this5), "storageName", {
         configurable: true,
         enumerable: true,
         writable: true,
@@ -357,17 +1772,17 @@
       if (!cls._listen) {
         cls._listen = true;
         onDOM(window, 'storage', function (ev) {
-          if (ev.key === _this4.storageName) {
+          if (ev.key === _this5.storageName) {
             var _get2;
 
             var event = JSON.parse(ev.newValue);
 
-            (_get2 = _get(CrossWindow.prototype.__proto__ || Object.getPrototypeOf(CrossWindow.prototype), "emit", _assertThisInitialized(_this4))).call.apply(_get2, [_this4, event.name].concat(_toConsumableArray(event.args)));
+            (_get2 = _get(CrossWindow.prototype.__proto__ || Object.getPrototypeOf(CrossWindow.prototype), "emit", _assertThisInitialized(_this5))).call.apply(_get2, [_this5, event.name].concat(_toConsumableArray(event.args)));
           }
         });
       }
 
-      return _this4;
+      return _this5;
     }
 
     _createClass(CrossWindow, [{
@@ -375,8 +1790,8 @@
       value: function emit(name) {
         var _get3;
 
-        for (var _len4 = arguments.length, args = new Array(_len4 > 1 ? _len4 - 1 : 0), _key4 = 1; _key4 < _len4; _key4++) {
-          args[_key4 - 1] = arguments[_key4];
+        for (var _len8 = arguments.length, args = new Array(_len8 > 1 ? _len8 - 1 : 0), _key9 = 1; _key9 < _len8; _key9++) {
+          args[_key9 - 1] = arguments[_key9];
         }
 
         (_get3 = _get(CrossWindow.prototype.__proto__ || Object.getPrototypeOf(CrossWindow.prototype), "emit", this)).call.apply(_get3, [this, name].concat(args));
@@ -394,6 +1809,99 @@
     return CrossWindow;
   }(EventProcessor);
 
+  var hp = /*#__PURE__*/Object.freeze({
+    store: store,
+    isset: isset,
+    isArray: isArray,
+    isBool: isBool,
+    isNumber: isNumber,
+    isNumeric: isNumeric,
+    isString: isString,
+    isObject: isObject,
+    isFunction: isFunction,
+    isPromise: isPromise,
+    empty: empty,
+    numRand: numRand,
+    numPad: numPad,
+    min: min,
+    max: max,
+    studlyCase: studlyCase,
+    kebabCase: kebabCase,
+    snakeCase: snakeCase,
+    camelCase: camelCase,
+    camelToWords: camelToWords,
+    titleCase: titleCase,
+    strRand: strRand,
+    replaceMultiple: replaceMultiple,
+    arrayRemove: arrayRemove,
+    arrayRemoveBySortedIndexes: arrayRemoveBySortedIndexes,
+    newArrayRemoveAt: newArrayRemoveAt,
+    arrayAt: arrayAt,
+    arrayFirst: arrayFirst,
+    arrayLast: arrayLast,
+    arrayDiff: arrayDiff,
+    arraySibling: arraySibling,
+    toArrayIfNot: toArrayIfNot,
+    splitArray: splitArray,
+    groupArray: groupArray,
+    arrayDistinct: arrayDistinct,
+    assignIfDifferent: assignIfDifferent,
+    objectMerge: objectMerge,
+    objectMap: objectMap,
+    objectOnly: objectOnly,
+    objectExcept: objectExcept,
+    forAll: forAll,
+    objectGet: objectGet,
+    objectSet: objectSet,
+    unset: unset,
+    cloneObj: cloneObj,
+    mapObjectTree: mapObjectTree,
+    mapObjects: mapObjects,
+    pairRows: pairRows,
+    executeWithCount: executeWithCount,
+    watchChange: watchChange,
+    store_executeOnceInScopeByName: store_executeOnceInScopeByName,
+    executeOnceInScopeByName: executeOnceInScopeByName,
+    debounce: debounce,
+    joinMethods: joinMethods,
+    executePromiseGetters: executePromiseGetters,
+    getUrlParam: getUrlParam,
+    uniqueId: uniqueId,
+    isDescendantOf: isDescendantOf,
+    getScroll: getScroll,
+    getOffset: getOffset,
+    offsetToPosition: offsetToPosition,
+    findParent: findParent,
+    backupAttr: backupAttr,
+    restoreAttr: restoreAttr,
+    hasClass: hasClass,
+    addClass: addClass,
+    removeClass: removeClass,
+    getElSize: getElSize,
+    isOffsetInEl: isOffsetInEl,
+    getBorder: getBorder,
+    setElChildByIndex: setElChildByIndex,
+    onDOM: onDOM,
+    offDOM: offDOM,
+    binarySearch: binarySearch,
+    windowLoaded: windowLoaded,
+    waitTime: waitTime,
+    waitFor: waitFor,
+    retry: retry,
+    copyTextToClipboard: copyTextToClipboard,
+    jqFixedSize: jqFixedSize,
+    jqMakeCarousel: jqMakeCarousel,
+    openWindow: openWindow,
+    openCenterWindow: openCenterWindow,
+    URLHelper: URLHelper,
+    resolveArgsByType: resolveArgsByType,
+    makeStorageHelper: makeStorageHelper,
+    localStorage2: localStorage2,
+    sessionStorage2: sessionStorage2,
+    EventProcessor: EventProcessor,
+    CrossWindow: CrossWindow
+  });
+
   // support desktop and mobile
   var events = {
     start: ['mousedown', 'touchstart'],
@@ -401,8 +1909,8 @@
     end: ['mouseup', 'touchend']
   };
   var index = {
-    canTouch: function canTouch() {
-      return 'ontouchstart' in document.documentElement;
+    isTouch: function isTouch(e) {
+      return e.type && e.type.startsWith('touch');
     },
     _getStore: function _getStore(el) {
       if (!el._wrapperStore) {
@@ -414,26 +1922,27 @@
     on: function on(el, name, handler) {
       var store$$1 = this._getStore(el);
 
-      var canTouch = this.canTouch();
-
       var wrapper = function wrapper(e) {
         var mouse;
+        var isTouch = this.isTouch(e);
 
-        if (!canTouch) {
-          if (name === 'start' && e.which !== 1) {
-            // not left button
-            return;
-          }
-
-          mouse = {
-            x: e.pageX,
-            y: e.pageY
-          };
-        } else {
+        if (isTouch) {
+          // touch
           mouse = {
             x: e.changedTouches[0].pageX,
             y: e.changedTouches[0].pageY
           };
+        } else {
+          // mouse
+          mouse = {
+            x: e.pageX,
+            y: e.pageY
+          };
+
+          if (name === 'start' && e.which !== 1) {
+            // not left button mousedown
+            return;
+          }
         }
 
         return handler.call(this, e, mouse);
@@ -443,13 +1952,20 @@
         handler: handler,
         wrapper: wrapper
       });
-      onDOM(el, events[name][canTouch ? 1 : 0], wrapper);
+
+      for (var _len = arguments.length, args = new Array(_len > 3 ? _len - 3 : 0), _key = 3; _key < _len; _key++) {
+        args[_key - 3] = arguments[_key];
+      }
+
+      onDOM.apply(hp, [el, events[name][0], wrapper].concat(args));
+      onDOM.apply(hp, [el, events[name][1], wrapper].concat(args));
     },
     off: function off(el, name, handler) {
       var store$$1 = this._getStore(el);
 
-      var canTouch = this.canTouch();
-      var eventName = events[name][canTouch ? 1 : 0];
+      for (var _len2 = arguments.length, args = new Array(_len2 > 3 ? _len2 - 3 : 0), _key2 = 3; _key2 < _len2; _key2++) {
+        args[_key2 - 3] = arguments[_key2];
+      }
 
       for (var i = store$$1.length - 1; i >= 0; i--) {
         var _store$i = store$$1[i],
@@ -457,7 +1973,8 @@
             wrapper = _store$i.wrapper;
 
         if (handler === handler2) {
-          offDOM(el, eventName, wrapper);
+          offDOM.apply(hp, [el, events[name][0], wrapper].concat(args));
+          offDOM.apply(hp, [el, events[name][1], wrapper].concat(args));
           store$$1.splice(i, 1);
         }
       }

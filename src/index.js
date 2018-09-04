@@ -9,8 +9,8 @@ const events = {
   end: ['mouseup', 'touchend'],
 }
 export default {
-  canTouch() {
-    return 'ontouchstart' in document.documentElement
+  isTouch(e) {
+    return e.type && e.type.startsWith('touch')
   },
   _getStore(el) {
     if (!el._wrapperStore) {
@@ -18,33 +18,35 @@ export default {
     }
     return el._wrapperStore
   },
-  on(el, name, handler) {
+  on(el, name, handler, ...args) {
     const store  = this._getStore(el)
-    const canTouch = this.canTouch()
     const wrapper = function (e) {
       let mouse
-      if (!canTouch) {
+      const isTouch = this.isTouch(e)
+      if (isTouch) {
+        // touch
+        mouse = {x: e.changedTouches[0].pageX, y: e.changedTouches[0].pageY}
+      } else {
+        // mouse
+        mouse = {x: e.pageX, y: e.pageY}
         if (name === 'start' && e.which !== 1) {
-          // not left button
+          // not left button mousedown
           return
         }
-        mouse = {x: e.pageX, y: e.pageY}
-      } else {
-        mouse = {x: e.changedTouches[0].pageX, y: e.changedTouches[0].pageY}
       }
       return handler.call(this, e, mouse)
     }
     store.push({handler, wrapper})
-    hp.onDOM(el, events[name][canTouch?1:0], wrapper)
+    hp.onDOM(el, events[name][0], wrapper, ...args)
+    hp.onDOM(el, events[name][1], wrapper, ...args)
   },
-  off(el, name, handler) {
+  off(el, name, handler, ...args) {
     const store  = this._getStore(el)
-    const canTouch = this.canTouch()
-    const eventName = events[name][canTouch?1:0]
     for (let i = store.length - 1; i >= 0; i--) {
       const {handler: handler2, wrapper} = store[i]
       if (handler === handler2) {
-        hp.offDOM(el, eventName, wrapper)
+        hp.offDOM(el, events[name][0], wrapper, ...args)
+        hp.offDOM(el, events[name][1], wrapper, ...args)
         store.splice(i, 1)
       }
     }
