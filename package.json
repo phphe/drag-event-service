@@ -1,6 +1,6 @@
 {
   "name": "drag-event-service",
-  "version": "0.0.6",
+  "version": "1.0.0",
   "description": "",
   "main": "dist/drag-event-service.cjs.js",
   "module": "dist/drag-event-service.es.js",
