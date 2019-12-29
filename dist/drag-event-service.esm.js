@@ -3,10 +3,6 @@
 * (c) phphe <phphe@outlook.com> (https://github.com/phphe)
 * Released under the MIT License.
 */
-'use strict';
-
-Object.defineProperty(exports, '__esModule', { value: true });
-
 /*!
 * helper-js v1.4.14
 * (c) phphe <phphe@outlook.com> (https://github.com/phphe)
@@ -149,4 +145,4 @@ function resolveOptions(options) {
   };
 }
 
-exports.default = index;
+export default index;
