@@ -1,12 +1,13 @@
 {
   "name": "drag-event-service",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "",
   "main": "dist/drag-event-service.cjs.js",
-  "module": "dist/drag-event-service.es.js",
+  "module": "dist/drag-event-service.esm.js",
   "scripts": {
-    "build": "bili --format cjs,umd,umd-min,es --banner",
-    "dev": "bili --format cjs,umd --watch"
+    "build": "node scripts/build.js",
+    "dev": "node scripts/build.js --watch",
+    "build-test": "rollup -c"
   },
   "author": "phphe <phphe@outlook.com> (https://github.com/phphe)",
   "unpkg": "dist/drag-event-service.js",
@@ -18,10 +19,10 @@
     "url": "https://github.com/phphe/drag-event-service.git"
   },
   "devDependencies": {
-    "bili": "^3.0.14"
+    "rollup-helper": "^2.0.1"
   },
   "dependencies": {
-    "helper-js": "^1.3.9"
+    "helper-js": "^1.4.14"
   },
   "license": "MIT"
 }
