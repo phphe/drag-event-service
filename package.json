@@ -6,8 +6,9 @@
   "module": "dist/drag-event-service.esm.js",
   "scripts": {
     "build": "node scripts/build.js",
-    "dev": "node scripts/build.js --watch",
-    "build-test": "rollup -c"
+    "dev": "rollup -w -c scripts/config.js --environment TARGET:umd",
+    "build:esm": "rollup -c scripts/config.js --environment TARGET:esm",
+    "dev:esm": "rollup -w -c scripts/config.js --environment TARGET:esm"
   },
   "author": "phphe <phphe@outlook.com> (https://github.com/phphe)",
   "unpkg": "dist/drag-event-service.js",
