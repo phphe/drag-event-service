@@ -1,20 +1,49 @@
 /*!
-* drag-event-service v1.0.1
-* (c) phphe <phphe@outlook.com> (https://github.com/phphe)
-* Released under the MIT License.
-*/
+ * drag-event-service v1.0.2
+ * (c) phphe <phphe@outlook.com> (https://github.com/phphe)
+ * Released under the MIT License.
+ */
 (function (global, factory) {
-  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
-  typeof define === 'function' && define.amd ? define(['exports'], factory) :
-  (global = global || self, factory(global.dragEventService = {}));
-}(this, (function (exports) { 'use strict';
+  typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
+  typeof define === 'function' && define.amd ? define(factory) :
+  (global = global || self, global.dragEventService = factory());
+}(this, (function () { 'use strict';
+
+  function _arrayWithoutHoles(arr) {
+    if (Array.isArray(arr)) {
+      for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) {
+        arr2[i] = arr[i];
+      }
+
+      return arr2;
+    }
+  }
+
+  var arrayWithoutHoles = _arrayWithoutHoles;
+
+  function _iterableToArray(iter) {
+    if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter);
+  }
+
+  var iterableToArray = _iterableToArray;
+
+  function _nonIterableSpread() {
+    throw new TypeError("Invalid attempt to spread non-iterable instance");
+  }
+
+  var nonIterableSpread = _nonIterableSpread;
+
+  function _toConsumableArray(arr) {
+    return arrayWithoutHoles(arr) || iterableToArray(arr) || nonIterableSpread();
+  }
+
+  var toConsumableArray = _toConsumableArray;
 
   /*!
-  * helper-js v1.4.14
-  * (c) phphe <phphe@outlook.com> (https://github.com/phphe)
-  * Released under the MIT License.
-  */
-
+   * helper-js v1.4.21
+   * (c) phphe <phphe@outlook.com> (https://github.com/phphe)
+   * Released under the MIT License.
+   */
 
   function onDOM(el, name, handler) {
     for (var _len6 = arguments.length, args = new Array(_len6 > 3 ? _len6 - 3 : 0), _key8 = 3; _key8 < _len6; _key8++) {
@@ -23,13 +52,12 @@
 
     if (el.addEventListener) {
       // 所有主流浏览器，除了 IE 8 及更早 IE版本
-      el.addEventListener.apply(el, [name, handler].concat(args));
+      el.addEventListener(name, handler, ...args);
     } else if (el.attachEvent) {
       // IE 8 及更早 IE 版本
-      el.attachEvent.apply(el, ["on".concat(name), handler].concat(args));
+      el.attachEvent("on".concat(name), handler, ...args);
     }
   }
-
   function offDOM(el, name, handler) {
     for (var _len7 = arguments.length, args = new Array(_len7 > 3 ? _len7 - 3 : 0), _key9 = 3; _key9 < _len7; _key9++) {
       args[_key9 - 3] = arguments[_key9];
@@ -37,46 +65,44 @@
 
     if (el.removeEventListener) {
       // 所有主流浏览器，除了 IE 8 及更早 IE版本
-      el.removeEventListener.apply(el, [name, handler].concat(args));
+      el.removeEventListener(name, handler, ...args);
     } else if (el.detachEvent) {
       // IE 8 及更早 IE 版本
-      el.detachEvent.apply(el, ["on".concat(name), handler].concat(args));
+      el.detachEvent("on".concat(name), handler, ...args);
     }
   }
 
-  // support desktop and mobile
-  const events = {
+  var events = {
     start: ['mousedown', 'touchstart'],
     move: ['mousemove', 'touchmove'],
     end: ['mouseup', 'touchend']
   };
   var index = {
-    isTouch(e) {
+    isTouch: function isTouch(e) {
       return e.type && e.type.startsWith('touch');
     },
-
-    _getStore(el) {
+    _getStore: function _getStore(el) {
       if (!el._wrapperStore) {
         el._wrapperStore = [];
       }
 
       return el._wrapperStore;
     },
+    on: function on(el, name, handler, options) {
+      var _hp$onDOM, _hp$onDOM2;
 
-    on(el, name, handler, options) {
-      const {
-        args,
-        mouseArgs,
-        touchArgs
-      } = resolveOptions(options);
+      var _resolveOptions = resolveOptions(options),
+          args = _resolveOptions.args,
+          mouseArgs = _resolveOptions.mouseArgs,
+          touchArgs = _resolveOptions.touchArgs;
 
-      const store = this._getStore(el);
+      var store = this._getStore(el);
 
-      const ts = this;
+      var ts = this;
 
-      const wrapper = function (e) {
-        let mouse;
-        const isTouch = ts.isTouch(e);
+      var wrapper = function wrapper(e) {
+        var mouse;
+        var isTouch = ts.isTouch(e);
 
         if (isTouch) {
           // touch
@@ -101,39 +127,39 @@
       };
 
       store.push({
-        handler,
-        wrapper
+        handler: handler,
+        wrapper: wrapper
       }); // follow format will cause big bundle size
       // 以下写法将会使打包工具认为hp是上下文, 导致打包整个hp
       // hp.onDOM(el, events[name][0], wrapper, ...args)
 
-      onDOM.call(null, el, events[name][0], wrapper, ...[...args, ...mouseArgs]);
-      onDOM.call(null, el, events[name][1], wrapper, ...[...args, ...touchArgs]);
+      (_hp$onDOM = onDOM).call.apply(_hp$onDOM, [null, el, events[name][0], wrapper].concat([].concat(toConsumableArray(args), toConsumableArray(mouseArgs))));
+
+      (_hp$onDOM2 = onDOM).call.apply(_hp$onDOM2, [null, el, events[name][1], wrapper].concat([].concat(toConsumableArray(args), toConsumableArray(touchArgs))));
     },
+    off: function off(el, name, handler, options) {
+      var _resolveOptions2 = resolveOptions(options),
+          args = _resolveOptions2.args,
+          mouseArgs = _resolveOptions2.mouseArgs;
 
-    off(el, name, handler, options) {
-      const {
-        args,
-        mouseArgs,
-        touchArgs
-      } = resolveOptions(options);
+      var store = this._getStore(el);
 
-      const store = this._getStore(el);
-
-      for (let i = store.length - 1; i >= 0; i--) {
-        const {
-          handler: handler2,
-          wrapper
-        } = store[i];
+      for (var i = store.length - 1; i >= 0; i--) {
+        var _store$i = store[i],
+            handler2 = _store$i.handler,
+            wrapper = _store$i.wrapper;
 
         if (handler === handler2) {
-          offDOM.call(null, el, events[name][0], wrapper, ...[...args, ...mouseArgs]);
-          offDOM.call(null, el, events[name][1], wrapper, ...[...args, ...mouseArgs]);
+          var _hp$offDOM, _hp$offDOM2;
+
+          (_hp$offDOM = offDOM).call.apply(_hp$offDOM, [null, el, events[name][0], wrapper].concat([].concat(toConsumableArray(args), toConsumableArray(mouseArgs))));
+
+          (_hp$offDOM2 = offDOM).call.apply(_hp$offDOM2, [null, el, events[name][1], wrapper].concat([].concat(toConsumableArray(args), toConsumableArray(mouseArgs))));
+
           store.splice(i, 1);
         }
       }
     }
-
   };
 
   function resolveOptions(options) {
@@ -141,18 +167,16 @@
       options = {};
     }
 
-    const args = options.args || [];
-    const mouseArgs = options.mouseArgs || [];
-    const touchArgs = options.touchArgs || [];
+    var args = options.args || [];
+    var mouseArgs = options.mouseArgs || [];
+    var touchArgs = options.touchArgs || [];
     return {
-      args,
-      mouseArgs,
-      touchArgs
+      args: args,
+      mouseArgs: mouseArgs,
+      touchArgs: touchArgs
     };
   }
 
-  exports.default = index;
-
-  Object.defineProperty(exports, '__esModule', { value: true });
+  return index;
 
 })));

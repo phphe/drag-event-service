@@ -1,6 +1,6 @@
 {
   "name": "drag-event-service",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "",
   "main": "dist/drag-event-service.cjs.js",
   "module": "dist/drag-event-service.esm.js",
@@ -19,10 +19,11 @@
     "url": "https://github.com/phphe/drag-event-service.git"
   },
   "devDependencies": {
-    "rollup-helper": "^2.0.1"
+    "rollup-helper": "^2.0.12"
   },
   "dependencies": {
-    "helper-js": "^1.4.14"
+    "@babel/runtime": "^7.7.7",
+    "helper-js": "^1.4.21"
   },
   "license": "MIT"
 }
