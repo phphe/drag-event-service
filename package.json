@@ -1,14 +1,11 @@
 {
   "name": "drag-event-service",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "",
   "main": "dist/drag-event-service.cjs.js",
   "module": "dist/drag-event-service.esm.js",
   "scripts": {
-    "build": "node scripts/build.js",
-    "dev": "rollup -w -c scripts/config.js --environment TARGET:umd",
-    "build:esm": "rollup -c scripts/config.js --environment TARGET:esm",
-    "dev:esm": "rollup -w -c scripts/config.js --environment TARGET:esm"
+    "build": "rogo"
   },
   "author": "phphe <phphe@outlook.com> (https://github.com/phphe)",
   "unpkg": "dist/drag-event-service.js",
@@ -20,11 +17,11 @@
     "url": "https://github.com/phphe/drag-event-service.git"
   },
   "devDependencies": {
-    "rollup-helper": "^2.0.12"
+    "rogo": "^1.0.0"
   },
   "dependencies": {
     "@babel/runtime": "^7.7.7",
-    "helper-js": "^1.4.21"
+    "helper-js": "^1.4.27"
   },
   "license": "MIT"
 }
