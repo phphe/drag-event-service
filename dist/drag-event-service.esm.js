@@ -1,35 +1,35 @@
 /*!
- * drag-event-service v1.0.3
+ * drag-event-service v1.0.4
  * (c) phphe <phphe@outlook.com> (https://github.com/phphe)
+ * Homepage: undefined
  * Released under the MIT License.
  */
+import _toConsumableArray from '@babel/runtime/helpers/toConsumableArray';
 import { onDOM, offDOM } from 'helper-js';
 
-// support desktop and mobile
 var events = {
   start: ['mousedown', 'touchstart'],
   move: ['mousemove', 'touchmove'],
   end: ['mouseup', 'touchend']
 };
 var index = {
-  isTouch(e) {
+  isTouch: function isTouch(e) {
     return e.type && e.type.startsWith('touch');
   },
-
-  _getStore(el) {
+  _getStore: function _getStore(el) {
     if (!el._wrapperStore) {
       el._wrapperStore = [];
     }
 
     return el._wrapperStore;
   },
+  on: function on(el, name, handler, options) {
+    var _hp$onDOM, _hp$onDOM2;
 
-  on(el, name, handler, options) {
-    var {
-      args,
-      mouseArgs,
-      touchArgs
-    } = resolveOptions(options);
+    var _resolveOptions = resolveOptions(options),
+        args = _resolveOptions.args,
+        mouseArgs = _resolveOptions.mouseArgs,
+        touchArgs = _resolveOptions.touchArgs;
 
     var store = this._getStore(el);
 
@@ -62,39 +62,39 @@ var index = {
     };
 
     store.push({
-      handler,
-      wrapper
+      handler: handler,
+      wrapper: wrapper
     }); // follow format will cause big bundle size
     // 以下写法将会使打包工具认为hp是上下文, 导致打包整个hp
     // hp.onDOM(el, events[name][0], wrapper, ...args)
 
-    onDOM.call(null, el, events[name][0], wrapper, ...[...args, ...mouseArgs]);
-    onDOM.call(null, el, events[name][1], wrapper, ...[...args, ...touchArgs]);
-  },
+    (_hp$onDOM = onDOM).call.apply(_hp$onDOM, [null, el, events[name][0], wrapper].concat([].concat(_toConsumableArray(args), _toConsumableArray(mouseArgs))));
 
-  off(el, name, handler, options) {
-    var {
-      args,
-      mouseArgs,
-      touchArgs
-    } = resolveOptions(options);
+    (_hp$onDOM2 = onDOM).call.apply(_hp$onDOM2, [null, el, events[name][1], wrapper].concat([].concat(_toConsumableArray(args), _toConsumableArray(touchArgs))));
+  },
+  off: function off(el, name, handler, options) {
+    var _resolveOptions2 = resolveOptions(options),
+        args = _resolveOptions2.args,
+        mouseArgs = _resolveOptions2.mouseArgs;
 
     var store = this._getStore(el);
 
     for (var i = store.length - 1; i >= 0; i--) {
-      var {
-        handler: handler2,
-        wrapper
-      } = store[i];
+      var _store$i = store[i],
+          handler2 = _store$i.handler,
+          wrapper = _store$i.wrapper;
 
       if (handler === handler2) {
-        offDOM.call(null, el, events[name][0], wrapper, ...[...args, ...mouseArgs]);
-        offDOM.call(null, el, events[name][1], wrapper, ...[...args, ...mouseArgs]);
+        var _hp$offDOM, _hp$offDOM2;
+
+        (_hp$offDOM = offDOM).call.apply(_hp$offDOM, [null, el, events[name][0], wrapper].concat([].concat(_toConsumableArray(args), _toConsumableArray(mouseArgs))));
+
+        (_hp$offDOM2 = offDOM).call.apply(_hp$offDOM2, [null, el, events[name][1], wrapper].concat([].concat(_toConsumableArray(args), _toConsumableArray(mouseArgs))));
+
         store.splice(i, 1);
       }
     }
   }
-
 };
 
 function resolveOptions(options) {
@@ -106,9 +106,9 @@ function resolveOptions(options) {
   var mouseArgs = options.mouseArgs || [];
   var touchArgs = options.touchArgs || [];
   return {
-    args,
-    mouseArgs,
-    touchArgs
+    args: args,
+    mouseArgs: mouseArgs,
+    touchArgs: touchArgs
   };
 }
 
