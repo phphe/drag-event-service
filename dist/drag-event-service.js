@@ -1,14 +1,14 @@
 /*!
- * drag-event-service v1.0.4
+ * drag-event-service v1.1.0
  * (c) phphe <phphe@outlook.com> (https://github.com/phphe)
  * Homepage: undefined
  * Released under the MIT License.
  */
 (function (global, factory) {
-  typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
-  typeof define === 'function' && define.amd ? define(factory) :
-  (global = global || self, global.dragEventService = factory());
-}(this, (function () { 'use strict';
+  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
+  typeof define === 'function' && define.amd ? define(['exports'], factory) :
+  (global = global || self, factory(global.dragEventService = {}));
+}(this, (function (exports) { 'use strict';
 
   function _arrayLikeToArray(arr, len) {
     if (len == null || len > arr.length) len = arr.length;
@@ -912,7 +912,7 @@
     move: ['mousemove', 'touchmove'],
     end: ['mouseup', 'touchend']
   };
-  var index = {
+  var DragEventService = {
     isTouch: function isTouch(e) {
       return e.type && e.type.startsWith('touch');
     },
@@ -943,13 +943,25 @@
           // touch
           mouse = {
             x: e.changedTouches[0].pageX,
-            y: e.changedTouches[0].pageY
+            y: e.changedTouches[0].pageY,
+            pageX: e.changedTouches[0].pageX,
+            pageY: e.changedTouches[0].pageY,
+            clientX: e.changedTouches[0].clientX,
+            clientY: e.changedTouches[0].clientY,
+            screenX: e.changedTouches[0].screenX,
+            screenY: e.changedTouches[0].screenY
           };
         } else {
           // mouse
           mouse = {
             x: e.pageX,
-            y: e.pageY
+            y: e.pageY,
+            pageX: e.pageX,
+            pageY: e.pageY,
+            clientX: e.clientX,
+            clientY: e.clientY,
+            screenX: e.screenX,
+            screenY: e.screenY
           };
 
           if (name === 'start' && e.which !== 1) {
@@ -1012,6 +1024,107 @@
     };
   }
 
-  return index;
+  function trackMouseOrTouchPosition() {
+    var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+    var trackedInfo = {
+      position: {}
+    };
+
+    var update = function update(name, e) {
+      var isTouch = DragEventService.isTouch(e);
+
+      if (isTouch) {
+        // touch
+        Object.assign(trackedInfo.position, {
+          x: e.changedTouches[0].pageX,
+          y: e.changedTouches[0].pageY,
+          pageX: e.changedTouches[0].pageX,
+          pageY: e.changedTouches[0].pageY,
+          clientX: e.changedTouches[0].clientX,
+          clientY: e.changedTouches[0].clientY,
+          screenX: e.changedTouches[0].screenX,
+          screenY: e.changedTouches[0].screenY
+        });
+      } else {
+        // mouse
+        Object.assign(trackedInfo.position, {
+          x: e.pageX,
+          y: e.pageY,
+          pageX: e.pageX,
+          pageY: e.pageY,
+          clientX: e.clientX,
+          clientY: e.clientY,
+          screenX: e.screenX,
+          screenY: e.screenY
+        });
+      }
+
+      if (name === 'start') {
+        trackedInfo.startEvent = e;
+      } else if (name === 'end') {
+        trackedInfo.endEvent = e;
+      }
+
+      Object.assign(trackedInfo, {
+        event: e,
+        isTouch: isTouch,
+        eventType: name
+      });
+    };
+
+    var onStart = function onStart(e) {
+      var isTouch = DragEventService.isTouch(e);
+
+      if (!isTouch && e.which !== 1) {
+        // not left button mousedown
+        return;
+      }
+
+      update('start', e);
+
+      if (options.onStart) {
+        options.onStart();
+      }
+    };
+
+    var onMove = function onMove() {
+      update('move', e);
+
+      if (options.onMove) {
+        options.onMove();
+      }
+    };
+
+    var onEnd = function onEnd() {
+      update('end', e);
+
+      if (options.onEnd) {
+        options.onEnd();
+      }
+    };
+
+    var start = function start() {
+      DragEventService.on(document, 'start', onStart);
+      DragEventService.on(document, 'move', onMove);
+      DragEventService.on(window, 'end', onEnd);
+    };
+
+    var stop = function stop() {
+      DragEventService.off(document, 'start', onStart);
+      DragEventService.off(document, 'move', onMove);
+      DragEventService.off(window, 'end', onEnd);
+    };
+
+    return {
+      info: info,
+      start: start,
+      stop: stop
+    };
+  }
+
+  exports.default = DragEventService;
+  exports.trackMouseOrTouchPosition = trackMouseOrTouchPosition;
+
+  Object.defineProperty(exports, '__esModule', { value: true });
 
 })));

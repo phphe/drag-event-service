@@ -1,5 +1,7 @@
 # drag-event-service
-Register both mouse and touch event.
+Listen both mouse and touch event. With Typescript definition files. Support Typescript.
+
+同时监听鼠标和触摸事件. 支持Typescript.
 ```js
 // mapping
 const events = {
@@ -8,23 +10,23 @@ const events = {
   end: ['mouseup', 'touchend'],
 }
 ```
-# install
+## install
 ```sh
 npm install drag-event-service
 ```
-# usage & api
+## usage & api
 ```js
 import DragEventService from 'drag-event-service'
 DragEventService.on(el, name, handler, {args, mouseArgs, touchArgs})
+DragEventService.off(el, name, handler, {args, mouseArgs, touchArgs})
 ```
-## on(el, name, handler, {args, mouseArgs, touchArgs}); off(el, name, handler, {args, mouseArgs, touchArgs})
 * args, mouseArgs and touchArgs should be Array
 * The args will pass to addEventListener.
 * mouseArgs will pass to mouse event.
 * touchArgs will pass to touch event.
-* handler(event, currentPosition). The second argument of handler is current position({x, y}).
+* handler(event, currentPosition). The second argument of handler is current position({x, y, pageX, pageY, clientX, clientY, screenX, screenY}). x and y is pageX and pageY.
 
-# example
+## example
 ```js
 // 1
 DragEventService.on(document, 'start', (e, mouse) => ..., {touchArgs: [{passive: false}]})
@@ -34,4 +36,33 @@ DragEventService.on(document, 'end', (e, mouse) => ..., {touchArgs: [{passive: f
 const handler = (e, mouse) => ...
 DragEventService.on(document, 'start', handler)
 DragEventService.off(document, 'start', handler)
+```
+
+## Track mouse or touch position globally
+全局跟踪鼠标或触摸位置
+### Usage
+```js
+import {trackMouseOrTouchPosition} from 'drag-event-service'
+const {info, start, stop} = trackMouseOrTouchPosition(options)
+```
+### Types
+```ts
+// options
+export interface Options_trackMouseOrTouchPosition{
+  onMove: () => void
+  onStart: () => void
+  onEnd: () => void
+}
+// info
+export interface TrackedInfo{
+  position: EventPosition
+  event: MouseOrTouchEvent
+  eventType: EventType
+  isTouch: boolean
+  startEvent?: MouseOrTouchEvent
+  endEvent?: MouseOrTouchEvent
+}
+// 
+start: () => void
+stop: () => void
 ```
