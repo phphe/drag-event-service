@@ -44,6 +44,7 @@ DragEventService.off(document, 'start', handler)
 ```js
 import {trackMouseOrTouchPosition} from 'drag-event-service'
 const {info, start, stop} = trackMouseOrTouchPosition(options)
+start() // call start to start tracking.
 ```
 ### Types
 ```ts
