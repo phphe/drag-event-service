@@ -60,6 +60,7 @@ export interface TrackedInfo{
   event: MouseOrTouchEvent
   eventType: EventType
   isTouch: boolean
+  started: boolean
   startEvent?: MouseOrTouchEvent
   endEvent?: MouseOrTouchEvent
 }
