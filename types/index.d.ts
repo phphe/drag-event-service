@@ -1,4 +1,9 @@
-export const DragEventService:Type_DragEventService
+const DragEventService: {
+  isTouch: (e: MouseOrTouchEvent) => Boolean
+  on: (el: HTMLElement, name: EventType, handler: Handler, options: Options) => void
+  off: (el: HTMLElement, name: EventType, handler: Handler, options: Options) => void
+}
+export default DragEventService
 
 export function trackMouseOrTouchPosition(options: Options_trackMouseOrTouchPosition): {
   info: TrackedInfo
@@ -7,11 +12,6 @@ export function trackMouseOrTouchPosition(options: Options_trackMouseOrTouchPosi
 }
 
 // types
-export interface Type_DragEventService{
-  isTouch: (e: MouseOrTouchEvent) => Boolean
-  on: (el: HTMLElement, name: EventType, handler: Handler, options: Options) => void
-  off: (el: HTMLElement, name: EventType, handler: Handler, options: Options) => void
-}
 export type EventType = 'start'|'move'|'end'
 export type MouseOrTouchEvent = MouseEvent|TouchEvent
 export interface EventPosition {
