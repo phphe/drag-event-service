@@ -5,7 +5,7 @@ const DragEventService: {
 }
 export default DragEventService
 
-export function trackMouseOrTouchPosition(options: Options_trackMouseOrTouchPosition): {
+export function trackMouseOrTouchPosition(options?: Options_trackMouseOrTouchPosition): {
   info: TrackedInfo
   start: () => void
   stop: () => void
