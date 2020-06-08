@@ -1,7 +1,7 @@
 const DragEventService: {
   isTouch: (e: MouseOrTouchEvent) => Boolean
-  on: (el: HTMLElement, name: EventType, handler: Handler, options: Options) => void
-  off: (el: HTMLElement, name: EventType, handler: Handler, options: Options) => void
+  on: (el: HTMLElement|Window|Document, name: EventType, handler: Handler, options?: Options) => void
+  off: (el: HTMLElement|Window|Document, name: EventType, handler: Handler, options?: Options) => void
 }
 export default DragEventService
 
@@ -27,9 +27,9 @@ export interface Handler{
   (e: MouseOrTouchEvent, evetPosition: EventPosition): void
 }
 export interface Options{
-  args?: [],
-  mouseArgs?: [],
-  touchArgs?: [],
+  args?: any[],
+  mouseArgs?: any[],
+  touchArgs?: any[],
 }
 export interface Options_trackMouseOrTouchPosition{
   onMove: () => void
