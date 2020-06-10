@@ -1,5 +1,5 @@
 /*!
- * drag-event-service v1.1.5
+ * drag-event-service v1.1.6
  * (c) phphe <phphe@outlook.com> (https://github.com/phphe)
  * Homepage: undefined
  * Released under the MIT License.
@@ -193,7 +193,7 @@ function trackMouseOrTouchPosition() {
     }
   };
 
-  var onMove = function onMove() {
+  var onMove = function onMove(e) {
     update('move', e);
 
     if (options.onMove) {
@@ -201,7 +201,7 @@ function trackMouseOrTouchPosition() {
     }
   };
 
-  var onEnd = function onEnd() {
+  var onEnd = function onEnd(e) {
     update('end', e);
 
     if (options.onEnd) {
@@ -213,18 +213,18 @@ function trackMouseOrTouchPosition() {
     DragEventService.on(document, 'start', onStart);
     DragEventService.on(document, 'move', onMove);
     DragEventService.on(window, 'end', onEnd);
-    info.started = true;
+    trackedInfo.started = true;
   };
 
   var stop = function stop() {
     DragEventService.off(document, 'start', onStart);
     DragEventService.off(document, 'move', onMove);
     DragEventService.off(window, 'end', onEnd);
-    info.started = false;
+    trackedInfo.started = false;
   };
 
   return {
-    info: info,
+    info: trackedInfo,
     start: start,
     stop: stop
   };

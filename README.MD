@@ -12,7 +12,7 @@ const events = {
 ```
 ## install
 ```sh
-npm install drag-event-service
+npm install drag-event-service --save
 ```
 ## usage & api
 ```js

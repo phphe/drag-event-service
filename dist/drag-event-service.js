@@ -1,5 +1,5 @@
 /*!
- * drag-event-service v1.1.5
+ * drag-event-service v1.1.6
  * (c) phphe <phphe@outlook.com> (https://github.com/phphe)
  * Homepage: undefined
  * Released under the MIT License.
@@ -872,37 +872,38 @@
   });
 
   /*!
-   * helper-js v1.4.36
+   * helper-js v2.0.0
    * (c) phphe <phphe@outlook.com> (https://github.com/phphe)
    * Homepage: undefined
    * Released under the MIT License.
    */
 
-
   function onDOM(el, name, handler) {
-    for (var _len6 = arguments.length, args = new Array(_len6 > 3 ? _len6 - 3 : 0), _key8 = 3; _key8 < _len6; _key8++) {
-      args[_key8 - 3] = arguments[_key8];
+    for (var _len5 = arguments.length, args = new Array(_len5 > 3 ? _len5 - 3 : 0), _key6 = 3; _key6 < _len5; _key6++) {
+      args[_key6 - 3] = arguments[_key6];
     }
 
     if (el.addEventListener) {
       // 所有主流浏览器，除了 IE 8 及更早 IE版本
-      el.addEventListener.apply(el, [name, handler].concat(args));
+      el.addEventListener.apply(el, [name, handler].concat(args)); // @ts-ignore
     } else if (el.attachEvent) {
       // IE 8 及更早 IE 版本
+      // @ts-ignore
       el.attachEvent.apply(el, ["on".concat(name), handler].concat(args));
     }
   }
 
   function offDOM(el, name, handler) {
-    for (var _len7 = arguments.length, args = new Array(_len7 > 3 ? _len7 - 3 : 0), _key9 = 3; _key9 < _len7; _key9++) {
-      args[_key9 - 3] = arguments[_key9];
+    for (var _len6 = arguments.length, args = new Array(_len6 > 3 ? _len6 - 3 : 0), _key7 = 3; _key7 < _len6; _key7++) {
+      args[_key7 - 3] = arguments[_key7];
     }
 
     if (el.removeEventListener) {
       // 所有主流浏览器，除了 IE 8 及更早 IE版本
-      el.removeEventListener.apply(el, [name, handler].concat(args));
+      el.removeEventListener.apply(el, [name, handler].concat(args)); // @ts-ignore
     } else if (el.detachEvent) {
       // IE 8 及更早 IE 版本
+      // @ts-ignore
       el.detachEvent.apply(el, ["on".concat(name), handler].concat(args));
     }
   }
@@ -1087,7 +1088,7 @@
       }
     };
 
-    var onMove = function onMove() {
+    var onMove = function onMove(e) {
       update('move', e);
 
       if (options.onMove) {
@@ -1095,7 +1096,7 @@
       }
     };
 
-    var onEnd = function onEnd() {
+    var onEnd = function onEnd(e) {
       update('end', e);
 
       if (options.onEnd) {
@@ -1107,18 +1108,18 @@
       DragEventService.on(document, 'start', onStart);
       DragEventService.on(document, 'move', onMove);
       DragEventService.on(window, 'end', onEnd);
-      info.started = true;
+      trackedInfo.started = true;
     };
 
     var stop = function stop() {
       DragEventService.off(document, 'start', onStart);
       DragEventService.off(document, 'move', onMove);
       DragEventService.off(window, 'end', onEnd);
-      info.started = false;
+      trackedInfo.started = false;
     };
 
     return {
-      info: info,
+      info: trackedInfo,
       start: start,
       stop: stop
     };

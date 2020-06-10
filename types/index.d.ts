@@ -32,9 +32,9 @@ export interface Options{
   touchArgs?: any[],
 }
 export interface Options_trackMouseOrTouchPosition{
-  onMove: () => void
-  onStart: () => void
-  onEnd: () => void
+  onMove?: () => void
+  onStart?: () => void
+  onEnd?: () => void
 }
 export interface TrackedInfo{
   position: EventPosition

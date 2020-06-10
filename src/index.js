@@ -134,13 +134,13 @@ export function trackMouseOrTouchPosition(options = {}) {
       options.onStart()
     }
   }
-  const onMove = () => {
+  const onMove = (e) => {
     update('move', e)
     if (options.onMove) {
       options.onMove()
     }
   }
-  const onEnd = () => {
+  const onEnd = (e) => {
     update('end', e)
     if (options.onEnd) {
       options.onEnd()
@@ -150,13 +150,13 @@ export function trackMouseOrTouchPosition(options = {}) {
     DragEventService.on(document, 'start', onStart)
     DragEventService.on(document, 'move', onMove)
     DragEventService.on(window, 'end', onEnd)
-    info.started = true
+    trackedInfo.started = true
   }
   const stop = () => {
     DragEventService.off(document, 'start', onStart)
     DragEventService.off(document, 'move', onMove)
     DragEventService.off(window, 'end', onEnd)
-    info.started = false
+    trackedInfo.started = false
   }
-  return {info, start, stop}
+  return {info:trackedInfo, start, stop}
 }
