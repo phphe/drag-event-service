@@ -1,4 +1,4 @@
-const DragEventService: {
+export declare const DragEventService: {
   isTouch: (e: MouseOrTouchEvent) => Boolean
   on: (el: HTMLElement|Window|Document, name: EventType, handler: Handler, options?: Options) => void
   off: (el: HTMLElement|Window|Document, name: EventType, handler: Handler, options?: Options) => void
