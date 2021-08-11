@@ -1,17 +1,40 @@
 /*!
- * drag-event-service v1.1.7
+ * drag-event-service v1.1.8
  * (c) phphe <phphe@outlook.com> (https://github.com/phphe)
- * Homepage: undefined
+ * Homepage: null
  * Released under the MIT License.
  */
 'use strict';
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
-function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'default' in ex) ? ex['default'] : ex; }
-
-var _toConsumableArray = _interopDefault(require('@babel/runtime/helpers/toConsumableArray'));
+var _toConsumableArray = require('@babel/runtime/helpers/toConsumableArray');
 var hp = require('helper-js');
+
+function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
+
+function _interopNamespace(e) {
+  if (e && e.__esModule) return e;
+  var n = Object.create(null);
+  if (e) {
+    Object.keys(e).forEach(function (k) {
+      if (k !== 'default') {
+        var d = Object.getOwnPropertyDescriptor(e, k);
+        Object.defineProperty(n, k, d.get ? d : {
+          enumerable: true,
+          get: function () {
+            return e[k];
+          }
+        });
+      }
+    });
+  }
+  n['default'] = e;
+  return Object.freeze(n);
+}
+
+var _toConsumableArray__default = /*#__PURE__*/_interopDefaultLegacy(_toConsumableArray);
+var hp__namespace = /*#__PURE__*/_interopNamespace(hp);
 
 var events = {
   start: ['mousedown', 'touchstart'],
@@ -86,9 +109,9 @@ var DragEventService = {
     // 以下写法将会使打包工具认为hp是上下文, 导致打包整个hp
     // hp.onDOM(el, events[name][0], wrapper, ...args)
 
-    (_hp$onDOM = hp.onDOM).call.apply(_hp$onDOM, [null, el, events[name][0], wrapper].concat([].concat(_toConsumableArray(args), _toConsumableArray(mouseArgs))));
+    (_hp$onDOM = hp__namespace.onDOM).call.apply(_hp$onDOM, [null, el, events[name][0], wrapper].concat([].concat(_toConsumableArray__default['default'](args), _toConsumableArray__default['default'](mouseArgs))));
 
-    (_hp$onDOM2 = hp.onDOM).call.apply(_hp$onDOM2, [null, el, events[name][1], wrapper].concat([].concat(_toConsumableArray(args), _toConsumableArray(touchArgs))));
+    (_hp$onDOM2 = hp__namespace.onDOM).call.apply(_hp$onDOM2, [null, el, events[name][1], wrapper].concat([].concat(_toConsumableArray__default['default'](args), _toConsumableArray__default['default'](touchArgs))));
   },
   off: function off(el, name, handler, options) {
     var _resolveOptions2 = resolveOptions(options),
@@ -105,9 +128,9 @@ var DragEventService = {
       if (handler === handler2) {
         var _hp$offDOM, _hp$offDOM2;
 
-        (_hp$offDOM = hp.offDOM).call.apply(_hp$offDOM, [null, el, events[name][0], wrapper].concat([].concat(_toConsumableArray(args), _toConsumableArray(mouseArgs))));
+        (_hp$offDOM = hp__namespace.offDOM).call.apply(_hp$offDOM, [null, el, events[name][0], wrapper].concat([].concat(_toConsumableArray__default['default'](args), _toConsumableArray__default['default'](mouseArgs))));
 
-        (_hp$offDOM2 = hp.offDOM).call.apply(_hp$offDOM2, [null, el, events[name][1], wrapper].concat([].concat(_toConsumableArray(args), _toConsumableArray(mouseArgs))));
+        (_hp$offDOM2 = hp__namespace.offDOM).call.apply(_hp$offDOM2, [null, el, events[name][1], wrapper].concat([].concat(_toConsumableArray__default['default'](args), _toConsumableArray__default['default'](mouseArgs))));
 
         store.splice(i, 1);
       }
@@ -230,5 +253,5 @@ function trackMouseOrTouchPosition() {
   };
 }
 
-exports.default = DragEventService;
+exports['default'] = DragEventService;
 exports.trackMouseOrTouchPosition = trackMouseOrTouchPosition;

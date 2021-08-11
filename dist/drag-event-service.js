@@ -1,13 +1,13 @@
 /*!
- * drag-event-service v1.1.7
+ * drag-event-service v1.1.8
  * (c) phphe <phphe@outlook.com> (https://github.com/phphe)
- * Homepage: undefined
+ * Homepage: null
  * Released under the MIT License.
  */
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
   typeof define === 'function' && define.amd ? define(['exports'], factory) :
-  (global = global || self, factory(global.dragEventService = {}));
+  (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.dragEventService = {}));
 }(this, (function (exports) { 'use strict';
 
   function _arrayLikeToArray(arr, len) {
@@ -20,127 +20,33 @@
     return arr2;
   }
 
-  var arrayLikeToArray = _arrayLikeToArray;
-
   function _arrayWithoutHoles(arr) {
-    if (Array.isArray(arr)) return arrayLikeToArray(arr);
+    if (Array.isArray(arr)) return _arrayLikeToArray(arr);
   }
-
-  var arrayWithoutHoles = _arrayWithoutHoles;
 
   function _iterableToArray(iter) {
-    if (typeof Symbol !== "undefined" && Symbol.iterator in Object(iter)) return Array.from(iter);
+    if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null) return Array.from(iter);
   }
-
-  var iterableToArray = _iterableToArray;
 
   function _unsupportedIterableToArray(o, minLen) {
     if (!o) return;
-    if (typeof o === "string") return arrayLikeToArray(o, minLen);
+    if (typeof o === "string") return _arrayLikeToArray(o, minLen);
     var n = Object.prototype.toString.call(o).slice(8, -1);
     if (n === "Object" && o.constructor) n = o.constructor.name;
-    if (n === "Map" || n === "Set") return Array.from(n);
-    if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return arrayLikeToArray(o, minLen);
+    if (n === "Map" || n === "Set") return Array.from(o);
+    if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen);
   }
-
-  var unsupportedIterableToArray = _unsupportedIterableToArray;
 
   function _nonIterableSpread() {
     throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
   }
 
-  var nonIterableSpread = _nonIterableSpread;
-
   function _toConsumableArray(arr) {
-    return arrayWithoutHoles(arr) || iterableToArray(arr) || unsupportedIterableToArray(arr) || nonIterableSpread();
+    return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread();
   }
 
-  var toConsumableArray = _toConsumableArray;
+  var runtime = {exports: {}};
 
-  function createCommonjsModule(fn, module) {
-  	return module = { exports: {} }, fn(module, module.exports), module.exports;
-  }
-
-  var getPrototypeOf = createCommonjsModule(function (module) {
-  function _getPrototypeOf(o) {
-    module.exports = _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) {
-      return o.__proto__ || Object.getPrototypeOf(o);
-    };
-    return _getPrototypeOf(o);
-  }
-
-  module.exports = _getPrototypeOf;
-  });
-
-  function _superPropBase(object, property) {
-    while (!Object.prototype.hasOwnProperty.call(object, property)) {
-      object = getPrototypeOf(object);
-      if (object === null) break;
-    }
-
-    return object;
-  }
-
-  var superPropBase = _superPropBase;
-
-  var get = createCommonjsModule(function (module) {
-  function _get(target, property, receiver) {
-    if (typeof Reflect !== "undefined" && Reflect.get) {
-      module.exports = _get = Reflect.get;
-    } else {
-      module.exports = _get = function _get(target, property, receiver) {
-        var base = superPropBase(target, property);
-        if (!base) return;
-        var desc = Object.getOwnPropertyDescriptor(base, property);
-
-        if (desc.get) {
-          return desc.get.call(receiver);
-        }
-
-        return desc.value;
-      };
-    }
-
-    return _get(target, property, receiver || target);
-  }
-
-  module.exports = _get;
-  });
-
-  var setPrototypeOf = createCommonjsModule(function (module) {
-  function _setPrototypeOf(o, p) {
-    module.exports = _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) {
-      o.__proto__ = p;
-      return o;
-    };
-
-    return _setPrototypeOf(o, p);
-  }
-
-  module.exports = _setPrototypeOf;
-  });
-
-  var _typeof_1 = createCommonjsModule(function (module) {
-  function _typeof(obj) {
-    "@babel/helpers - typeof";
-
-    if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") {
-      module.exports = _typeof = function _typeof(obj) {
-        return typeof obj;
-      };
-    } else {
-      module.exports = _typeof = function _typeof(obj) {
-        return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
-      };
-    }
-
-    return _typeof(obj);
-  }
-
-  module.exports = _typeof;
-  });
-
-  var runtime_1 = createCommonjsModule(function (module) {
   /**
    * Copyright (c) 2014-present, Facebook, Inc.
    *
@@ -148,6 +54,7 @@
    * LICENSE file in the root directory of this source tree.
    */
 
+  (function (module) {
   var runtime = (function (exports) {
 
     var Op = Object.prototype;
@@ -157,6 +64,24 @@
     var iteratorSymbol = $Symbol.iterator || "@@iterator";
     var asyncIteratorSymbol = $Symbol.asyncIterator || "@@asyncIterator";
     var toStringTagSymbol = $Symbol.toStringTag || "@@toStringTag";
+
+    function define(obj, key, value) {
+      Object.defineProperty(obj, key, {
+        value: value,
+        enumerable: true,
+        configurable: true,
+        writable: true
+      });
+      return obj[key];
+    }
+    try {
+      // IE 8 has a broken Object.defineProperty that only works on DOM objects.
+      define({}, "");
+    } catch (err) {
+      define = function(obj, key, value) {
+        return obj[key] = value;
+      };
+    }
 
     function wrap(innerFn, outerFn, self, tryLocsList) {
       // If outerFn provided and outerFn.prototype is a Generator, then outerFn.prototype instanceof Generator.
@@ -210,9 +135,9 @@
     // This is a polyfill for %IteratorPrototype% for environments that
     // don't natively support it.
     var IteratorPrototype = {};
-    IteratorPrototype[iteratorSymbol] = function () {
+    define(IteratorPrototype, iteratorSymbol, function () {
       return this;
-    };
+    });
 
     var getProto = Object.getPrototypeOf;
     var NativeIteratorPrototype = getProto && getProto(getProto(values([])));
@@ -226,18 +151,22 @@
 
     var Gp = GeneratorFunctionPrototype.prototype =
       Generator.prototype = Object.create(IteratorPrototype);
-    GeneratorFunction.prototype = Gp.constructor = GeneratorFunctionPrototype;
-    GeneratorFunctionPrototype.constructor = GeneratorFunction;
-    GeneratorFunctionPrototype[toStringTagSymbol] =
-      GeneratorFunction.displayName = "GeneratorFunction";
+    GeneratorFunction.prototype = GeneratorFunctionPrototype;
+    define(Gp, "constructor", GeneratorFunctionPrototype);
+    define(GeneratorFunctionPrototype, "constructor", GeneratorFunction);
+    GeneratorFunction.displayName = define(
+      GeneratorFunctionPrototype,
+      toStringTagSymbol,
+      "GeneratorFunction"
+    );
 
     // Helper for defining the .next, .throw, and .return methods of the
     // Iterator interface in terms of a single ._invoke method.
     function defineIteratorMethods(prototype) {
       ["next", "throw", "return"].forEach(function(method) {
-        prototype[method] = function(arg) {
+        define(prototype, method, function(arg) {
           return this._invoke(method, arg);
-        };
+        });
       });
     }
 
@@ -256,9 +185,7 @@
         Object.setPrototypeOf(genFun, GeneratorFunctionPrototype);
       } else {
         genFun.__proto__ = GeneratorFunctionPrototype;
-        if (!(toStringTagSymbol in genFun)) {
-          genFun[toStringTagSymbol] = "GeneratorFunction";
-        }
+        define(genFun, toStringTagSymbol, "GeneratorFunction");
       }
       genFun.prototype = Object.create(Gp);
       return genFun;
@@ -340,9 +267,9 @@
     }
 
     defineIteratorMethods(AsyncIterator.prototype);
-    AsyncIterator.prototype[asyncIteratorSymbol] = function () {
+    define(AsyncIterator.prototype, asyncIteratorSymbol, function () {
       return this;
-    };
+    });
     exports.AsyncIterator = AsyncIterator;
 
     // Note that simple async functions are implemented on top of
@@ -528,20 +455,20 @@
     // unified ._invoke helper method.
     defineIteratorMethods(Gp);
 
-    Gp[toStringTagSymbol] = "Generator";
+    define(Gp, toStringTagSymbol, "Generator");
 
     // A Generator should always return itself as the iterator object when the
     // @@iterator function is called on it. Some browsers' implementations of the
     // iterator prototype chain incorrectly implement this, causing the Generator
     // object to not be returned from this call. This ensures that doesn't happen.
     // See https://github.com/facebook/regenerator/issues/274 for more details.
-    Gp[iteratorSymbol] = function() {
+    define(Gp, iteratorSymbol, function() {
       return this;
-    };
+    });
 
-    Gp.toString = function() {
+    define(Gp, "toString", function() {
       return "[object Generator]";
-    };
+    });
 
     function pushTryEntry(locs) {
       var entry = { tryLoc: locs[0] };
@@ -852,7 +779,7 @@
     // as the regeneratorRuntime namespace. Otherwise create a new empty
     // object. Either way, the resulting object will be used to initialize
     // the regeneratorRuntime variable at the top of this file.
-     module.exports 
+    module.exports 
   ));
 
   try {
@@ -860,21 +787,26 @@
   } catch (accidentalStrictMode) {
     // This module should not be running in strict mode, so the above
     // assignment should always work unless something is misconfigured. Just
-    // in case runtime.js accidentally runs in strict mode, we can escape
+    // in case runtime.js accidentally runs in strict mode, in modern engines
+    // we can explicitly access globalThis. In older engines we can escape
     // strict mode using a global Function call. This could conceivably fail
     // if a Content Security Policy forbids using Function, but in that case
     // the proper solution is to fix the accidental strict mode problem. If
     // you've misconfigured your bundler to force strict mode and applied a
     // CSP to forbid Function, and you're not willing to fix either of those
     // problems, please detail your unique predicament in a GitHub issue.
-    Function("r", "regeneratorRuntime = r")(runtime);
+    if (typeof globalThis === "object") {
+      globalThis.regeneratorRuntime = runtime;
+    } else {
+      Function("r", "regeneratorRuntime = r")(runtime);
+    }
   }
-  });
+  }(runtime));
 
   /*!
-   * helper-js v2.0.0
+   * helper-js v2.0.5
    * (c) phphe <phphe@outlook.com> (https://github.com/phphe)
-   * Homepage: undefined
+   * Homepage: null
    * Released under the MIT License.
    */
 
@@ -981,9 +913,9 @@
       // 以下写法将会使打包工具认为hp是上下文, 导致打包整个hp
       // hp.onDOM(el, events[name][0], wrapper, ...args)
 
-      (_hp$onDOM = onDOM).call.apply(_hp$onDOM, [null, el, events[name][0], wrapper].concat([].concat(toConsumableArray(args), toConsumableArray(mouseArgs))));
+      (_hp$onDOM = onDOM).call.apply(_hp$onDOM, [null, el, events[name][0], wrapper].concat([].concat(_toConsumableArray(args), _toConsumableArray(mouseArgs))));
 
-      (_hp$onDOM2 = onDOM).call.apply(_hp$onDOM2, [null, el, events[name][1], wrapper].concat([].concat(toConsumableArray(args), toConsumableArray(touchArgs))));
+      (_hp$onDOM2 = onDOM).call.apply(_hp$onDOM2, [null, el, events[name][1], wrapper].concat([].concat(_toConsumableArray(args), _toConsumableArray(touchArgs))));
     },
     off: function off(el, name, handler, options) {
       var _resolveOptions2 = resolveOptions(options),
@@ -1000,9 +932,9 @@
         if (handler === handler2) {
           var _hp$offDOM, _hp$offDOM2;
 
-          (_hp$offDOM = offDOM).call.apply(_hp$offDOM, [null, el, events[name][0], wrapper].concat([].concat(toConsumableArray(args), toConsumableArray(mouseArgs))));
+          (_hp$offDOM = offDOM).call.apply(_hp$offDOM, [null, el, events[name][0], wrapper].concat([].concat(_toConsumableArray(args), _toConsumableArray(mouseArgs))));
 
-          (_hp$offDOM2 = offDOM).call.apply(_hp$offDOM2, [null, el, events[name][1], wrapper].concat([].concat(toConsumableArray(args), toConsumableArray(mouseArgs))));
+          (_hp$offDOM2 = offDOM).call.apply(_hp$offDOM2, [null, el, events[name][1], wrapper].concat([].concat(_toConsumableArray(args), _toConsumableArray(mouseArgs))));
 
           store.splice(i, 1);
         }
@@ -1125,7 +1057,7 @@
     };
   }
 
-  exports.default = DragEventService;
+  exports['default'] = DragEventService;
   exports.trackMouseOrTouchPosition = trackMouseOrTouchPosition;
 
   Object.defineProperty(exports, '__esModule', { value: true });

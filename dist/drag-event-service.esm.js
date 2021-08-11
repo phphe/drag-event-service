@@ -1,11 +1,11 @@
 /*!
- * drag-event-service v1.1.7
+ * drag-event-service v1.1.8
  * (c) phphe <phphe@outlook.com> (https://github.com/phphe)
- * Homepage: undefined
+ * Homepage: null
  * Released under the MIT License.
  */
 import _toConsumableArray from '@babel/runtime/helpers/toConsumableArray';
-import { onDOM, offDOM } from 'helper-js';
+import * as hp from 'helper-js';
 
 var events = {
   start: ['mousedown', 'touchstart'],
@@ -80,9 +80,9 @@ var DragEventService = {
     // 以下写法将会使打包工具认为hp是上下文, 导致打包整个hp
     // hp.onDOM(el, events[name][0], wrapper, ...args)
 
-    (_hp$onDOM = onDOM).call.apply(_hp$onDOM, [null, el, events[name][0], wrapper].concat([].concat(_toConsumableArray(args), _toConsumableArray(mouseArgs))));
+    (_hp$onDOM = hp.onDOM).call.apply(_hp$onDOM, [null, el, events[name][0], wrapper].concat([].concat(_toConsumableArray(args), _toConsumableArray(mouseArgs))));
 
-    (_hp$onDOM2 = onDOM).call.apply(_hp$onDOM2, [null, el, events[name][1], wrapper].concat([].concat(_toConsumableArray(args), _toConsumableArray(touchArgs))));
+    (_hp$onDOM2 = hp.onDOM).call.apply(_hp$onDOM2, [null, el, events[name][1], wrapper].concat([].concat(_toConsumableArray(args), _toConsumableArray(touchArgs))));
   },
   off: function off(el, name, handler, options) {
     var _resolveOptions2 = resolveOptions(options),
@@ -99,9 +99,9 @@ var DragEventService = {
       if (handler === handler2) {
         var _hp$offDOM, _hp$offDOM2;
 
-        (_hp$offDOM = offDOM).call.apply(_hp$offDOM, [null, el, events[name][0], wrapper].concat([].concat(_toConsumableArray(args), _toConsumableArray(mouseArgs))));
+        (_hp$offDOM = hp.offDOM).call.apply(_hp$offDOM, [null, el, events[name][0], wrapper].concat([].concat(_toConsumableArray(args), _toConsumableArray(mouseArgs))));
 
-        (_hp$offDOM2 = offDOM).call.apply(_hp$offDOM2, [null, el, events[name][1], wrapper].concat([].concat(_toConsumableArray(args), _toConsumableArray(mouseArgs))));
+        (_hp$offDOM2 = hp.offDOM).call.apply(_hp$offDOM2, [null, el, events[name][1], wrapper].concat([].concat(_toConsumableArray(args), _toConsumableArray(mouseArgs))));
 
         store.splice(i, 1);
       }
@@ -224,5 +224,4 @@ function trackMouseOrTouchPosition() {
   };
 }
 
-export default DragEventService;
-export { trackMouseOrTouchPosition };
+export { DragEventService as default, trackMouseOrTouchPosition };
