@@ -1,6 +1,6 @@
 {
   "name": "drag-event-service",
-  "version": "1.1.8",
+  "version": "1.1.10",
   "description": "",
   "main": "dist/drag-event-service.cjs.js",
   "module": "dist/drag-event-service.esm.js",
@@ -10,8 +10,8 @@
     "types"
   ],
   "scripts": {
-    "compile-scripts": "tsc --target ES6 --module CommonJS scripts/build.ts",
-    "build": "rollup -c scripts/build.js & node scripts/build.js --report"
+    "build": "rollup -c scripts/build.js & node scripts/build.js --report",
+    "watch-lib": "rollup -c scripts/build.js --watch"
   },
   "author": "phphe <phphe@outlook.com> (https://github.com/phphe)",
   "unpkg": "dist/drag-event-service.js",

@@ -1,5 +1,5 @@
 /*!
- * drag-event-service v1.1.8
+ * drag-event-service v1.1.10
  * (c) phphe <phphe@outlook.com> (https://github.com/phphe)
  * Homepage: null
  * Released under the MIT License.
@@ -804,7 +804,7 @@
   }(runtime));
 
   /*!
-   * helper-js v2.0.5
+   * helper-js v2.0.6
    * (c) phphe <phphe@outlook.com> (https://github.com/phphe)
    * Homepage: null
    * Released under the MIT License.
