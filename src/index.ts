@@ -1,7 +1,5 @@
 // support desktop and mobile
 // support start, move, end
-// the second argument is mouse{x, y}
-// @ts-nocheck
 import * as hp from "helper-js";
 
 const events = {
@@ -30,13 +28,16 @@ const DragEventService = {
     return e.type && e.type.startsWith("touch");
   },
   _getStore(el: Element) {
+    // @ts-ignore
     if (!el._wrapperStore) {
+      // @ts-ignore
       el._wrapperStore = [];
     }
+    // @ts-ignore
     return el._wrapperStore;
   },
   on<T>(
-    el: Element,
+    el: Element | Document | Window,
     name: string,
     handler: (
       event: MouseEvent | TouchEvent,
@@ -84,36 +85,29 @@ const DragEventService = {
     store.push({ handler, wrapper });
     // follow format will cause big bundle size
     // 以下写法将会使打包工具认为hp是上下文, 导致打包整个hp
-    // hp.onDOM(el, events[name][0], wrapper, ...args)
-    hp.onDOM.call(
-      null,
-      el,
-      events[name][0],
-      wrapper,
-      ...[...args, ...mouseArgs]
-    );
-    hp.onDOM.call(
-      null,
-      el,
-      events[name][1],
-      wrapper,
-      ...[...args, ...touchArgs]
-    );
+    // hp.on(el, events[name][0], wrapper, ...args)
+    hp.on.call(null, el, events[name][0], wrapper, ...[...args, ...mouseArgs]);
+    hp.on.call(null, el, events[name][1], wrapper, ...[...args, ...touchArgs]);
   },
-  off(el: Element, name: string, handler: any, options?: Options) {
+  off(
+    el: Element | Document | Window,
+    name: string,
+    handler: any,
+    options?: Options
+  ) {
     const { args, mouseArgs, touchArgs } = resolveOptions(options);
     const store = this._getStore(el);
     for (let i = store.length - 1; i >= 0; i--) {
       const { handler: handler2, wrapper } = store[i];
       if (handler === handler2) {
-        hp.offDOM.call(
+        hp.off.call(
           null,
           el,
           events[name][0],
           wrapper,
           ...[...args, ...mouseArgs]
         );
-        hp.offDOM.call(
+        hp.off.call(
           null,
           el,
           events[name][1],
